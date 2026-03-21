@@ -1,0 +1,8 @@
+# how to run the container from image
+
+# all services
+services:
+  bot:
+    build: . # dockerfile location
+    env_file: .env # .env location to inject
+    restart: unless-stopped # auto-restart unless manually stopped
