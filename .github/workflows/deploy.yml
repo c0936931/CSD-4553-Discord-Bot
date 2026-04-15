@@ -18,13 +18,13 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Stop app
-        run: |
-          powershell.exe -Command "
-            Write-Host 'Stopping service...';
-            Stop-Service -Name 'Discord-Bot' -Force -ErrorAction SilentlyContinue;
-            Start-Sleep -Seconds 2;
-          "
+      # - name: Stop app
+      #   run: |
+      #     powershell.exe -Command "
+      #       Write-Host 'Stopping service...';
+      #       Stop-Service -Name 'Discord-Bot' -Force -ErrorAction SilentlyContinue;
+      #       Start-Sleep -Seconds 2;
+      #     "
 
       - name: Install dependencies
         run: pip install -r requirements.txt
@@ -34,11 +34,11 @@ jobs:
           robocopy . "C:\Disrcord-Bot" /MIR
         shell: powershell
 
-      - name: Start app
-        run: |
-          powershell.exe -Command "
-            Write-Host 'Starting service...';
-            Start-Service -Name 'Discord-Bot';
-            Start-Sleep -Seconds 2;
-            Write-Host 'App Started!'
-          "
+      # - name: Start app
+      #   run: |
+      #     powershell.exe -Command "
+      #       Write-Host 'Starting service...';
+      #       Start-Service -Name 'Discord-Bot';
+      #       Start-Sleep -Seconds 2;
+      #       Write-Host 'App Started!'
+      #     "
