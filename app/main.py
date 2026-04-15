@@ -25,16 +25,8 @@ async def load_extensions(bot: commands.Bot) -> None:
         await bot.load_extension(extension)
 
 
-def test_env():
-    # Try to load env and if it doesn't work try to load for San deploy
-    if os.getenv("MONGO_URI") == None:
-        load_dotenv(dotenv_path='C:\Discord-Bot\.env')
-
-
 def main():
     intents = discord.Intents.default()
-
-    test_env()
 
     db = Database(os.getenv("MONGO_URI"))
     bot = commands.Bot(command_prefix="!", intents=intents)
