@@ -1,0 +1,44 @@
+name: Deploy python app
+
+on:
+  workflow_dispatch:
+  # push:
+    # branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6.0.2
+
+      - name: Setup Python
+        uses: actions/setup-python@v6.2.0
+        with:
+          python-version: "3.11"
+
+      - name: Stop app
+        run: |
+          powershell.exe -Command "
+            Write-Host 'Stopping service...';
+            Stop-Service -Name 'Discord-Bot' -Force -ErrorAction SilentlyContinue;
+            Start-Sleep -Seconds 2;
+          "
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Copy app files
+        run: |
+          robocopy . "C:\Disrcord-Bot" /MIR
+        shell: powershell
+
+      - name: Start app
+        run: |
+          powershell.exe -Command "
+            Write-Host 'Starting service...';
+            Start-Service -Name 'Discord-Bot';
+            Start-Sleep -Seconds 2;
+            Write-Host 'App Started!'
+          "
