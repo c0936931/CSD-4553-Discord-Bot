@@ -20,10 +20,11 @@ jobs:
 
       - name: Copy over env
         run: |
-          "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" | Out-File -FilePath .env -Encoding utf8
-          "MONGO_URI==${{ secrets.MONGO_URI }}" | Out-File -FilePath .env -Append -Encoding utf8
-        shell: pwsh
-
+          powershell.exe -Command "
+            echo DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }} > .env;
+            echo MONGO_URI==${{ secrets.MONGO_URI }} >> .env;
+          "
+          
       - name: Stop app
         run: |
           powershell.exe -Command "
