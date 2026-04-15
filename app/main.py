@@ -28,7 +28,7 @@ async def load_extensions(bot: commands.Bot) -> None:
 def main():
     intents = discord.Intents.default()
 
-    db = Database(os.getenv("MONGO_URI"))
+    db = Database(str(os.getenv("MONGO_URI")))
     bot = commands.Bot(command_prefix="!", intents=intents)
     bot.db = db  # attach db to bot so cogs can access it via bot.db
 
@@ -44,7 +44,7 @@ def main():
 
     bot.setup_hook = setup_hook
 
-    bot.run(os.getenv("DISCORD_TOKEN"))
+    bot.run(str(os.getenv("DISCORD_TOKEN")))
 
 
 if __name__ == "__main__":
