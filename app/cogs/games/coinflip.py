@@ -25,8 +25,10 @@ class Coinflip(commands.Cog):
         wager: int,
         choice: app_commands.Choice[str],
     ) -> None:
+        await interaction.response.defer()
+
         if wager <= 0:
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Wager must be at least 1 coin", ephemeral=True
             )
             return
@@ -36,7 +38,7 @@ class Coinflip(commands.Cog):
         )
 
         if user["balance"] < wager:
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 f"Not enough coins, balance: {user['balance']:,}", ephemeral=True
             )
             return
@@ -66,7 +68,7 @@ class Coinflip(commands.Cog):
             ),
             color=color,
         )
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:

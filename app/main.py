@@ -12,7 +12,6 @@ load_dotenv()
 #   2. Add its path to this list (e.g. "cogs.economy.mycommand")
 #   3. Restart the bot, it will load automatically
 EXTENSIONS = [
-    "cogs.economy.balance",
     "cogs.economy.stats",
     "cogs.economy.rankings",
     "cogs.games.coinflip",
@@ -25,8 +24,9 @@ async def load_extensions(bot: commands.Bot) -> None:
         # Try to load extensions
         try:
             await bot.load_extension(extension)
-        except Exception as e: 
+        except Exception as e:
             print(e)
+
 
 def main():
     intents = discord.Intents.default()

@@ -11,12 +11,11 @@ class Stats(commands.Cog):
 
     @app_commands.command(description="Check your stats")
     async def stats(self, interaction: discord.Interaction) -> None:
+        await interaction.response.defer()
         user = await self.db.get_stats(interaction.user.id)
 
         if not user:
-            await interaction.response.send_message(
-                "No stats yet, play some games first"
-            )
+            await interaction.followup.send("No stats yet, play some games first")
             return
 
         coinflip = user.get("coinflip", {})
@@ -48,7 +47,7 @@ class Stats(commands.Cog):
         embed.add_field(name="Trivia W/L", value=tv_ratio, inline=True)
         embed.set_thumbnail(url=interaction.user.display_avatar.url)
 
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed)
 
 
 async def setup(bot: commands.Bot) -> None:

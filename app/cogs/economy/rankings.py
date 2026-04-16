@@ -22,12 +22,13 @@ class Rankings(commands.Cog):
     async def rankings(self, interaction: discord.Interaction) -> None:
         # interaction represents the user who ran the command
         # Use interaction.user to get their info (id, name, avatar, etc.)
-        # Every command must call interaction.response.send_message() exactly once
+        # For commands that make DB calls, defer first then use followup.send()
+        await interaction.response.defer()
 
         top_users = await self.db.get_rankings()
 
         if not top_users:
-            await interaction.response.send_message("No users in the leaderboard yet")
+            await interaction.followup.send("No users in the leaderboard yet")
             return
 
         # Embeds are the rich message cards Discord supports
@@ -39,7 +40,7 @@ class Rankings(commands.Cog):
             lines.append(f"**{i}.** {user['username']}: {user['balance']:,} coins")
 
         embed.description = "\n".join(lines)
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed)
 
 
 # setup() is required at the bottom of every cog file
