@@ -22,8 +22,11 @@ EXTENSIONS = [
 
 async def load_extensions(bot: commands.Bot) -> None:
     for extension in EXTENSIONS:
-        await bot.load_extension(extension)
-
+        # Try to load extensions
+        try:
+            await bot.load_extension(extension)
+        except Exception as e: 
+            print(e)
 
 def main():
     intents = discord.Intents.default()
