@@ -13,38 +13,12 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v6.0.2
 
-      - name: Setup Python
-        uses: actions/setup-python@v6.2.0
-        with:
-          python-version: "3.11"
-
       - name: Copy over env
         run: |
           powershell.exe -Command 'echo "" | Out-File -FilePath .env -Encoding UTF8'
           powershell.exe -Command 'echo "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" | Out-File -FilePath .env -Append -Encoding UTF8'
           powershell.exe -Command 'echo "MONGO_URI=${{ secrets.MONGO_URI }}" | Out-File -FilePath .env -Append -Encoding UTF8'
-          
-      - name: Stop app
-        run: |
-          powershell.exe -Command "
-            Write-Host 'Stopping service...';
-            schtasks /end /tn "Discord-Bot";
-            Start-Sleep -Seconds 2;
-          "
 
-      - name: Install dependencies
-        run: pip install -r requirements.txt
-
-      - name: Copy app files
+      - name: Run docker
         run: |
-          robocopy . "C:\Discord-Bot" /MIR /R:0 /W:0; exit 0
-        shell: powershell
-
-      - name: Start app
-        run: |
-          powershell.exe -Command "
-            Write-Host 'Starting service...';
-            schtasks /run /tn "Discord-Bot"
-            Start-Sleep -Seconds 2;
-            Write-Host 'App Started!'
-          "
+          powershell.exe -Command 'docker compose up --build -d'
