@@ -5,8 +5,9 @@ from discord.ext import commands
 
 
 class Joke(commands.Cog):
-	def __init__(self, bot: commands.Bot) -> None:
+	def __init__(self, bot: commands.Bot, db) -> None:
 		self.bot = bot
+		self.db = db
 
 	@app_commands.command(description="Get a random joke")
 	async def joke(self, interaction: discord.Interaction) -> None:
@@ -50,4 +51,4 @@ class Joke(commands.Cog):
 
 
 async def setup(bot: commands.Bot) -> None:
-	await bot.add_cog(Joke(bot))
+	await bot.add_cog(Joke(bot, bot.db))
