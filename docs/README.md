@@ -4,11 +4,12 @@ A Discord bot with slash commands, minigames, and persistent coin balances store
 
 ## Features
 
-- `/balance` — check your coin balance
 - `/stats` — view your full stats (balance, games played, win/loss ratios)
 - `/rankings` — top 10 richest users
 - `/coinflip` — wager coins on a coin flip
 - `/trivia` — answer a trivia question to earn coins (reward scales with difficulty)
+- `/blackjack` — play a game of blackjack to earn coins
+- `/joke` — get told a random joke
 
 ## Tech Stack
 
@@ -54,7 +55,7 @@ docker compose logs -f   # view logs while running in background
 
 ---
 
-## Project Structure
+## Project Structure - Needs updating
 
 ```
 app/
@@ -63,7 +64,6 @@ app/
 ├── configs.py           # shared constants (rewards, emojis, API URLs)
 └── cogs/
     ├── economy/         # commands pertaining to economy
-    │   ├── balance.py
     │   ├── stats.py
     │   └── rankings.py  # /rankings  ← best file to read first
     └── games/           # commands pertaining to minigames
