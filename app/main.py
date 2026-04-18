@@ -3,6 +3,8 @@ import discord
 from discord.ext import commands
 from dotenv import load_dotenv
 from db import Database
+import logging
+from logger import DiscordLogHandler
 
 load_dotenv()
 
@@ -12,43 +14,58 @@ load_dotenv()
 #   2. Add its path to this list (e.g. "cogs.economy.mycommand")
 #   3. Restart the bot, it will load automatically
 EXTENSIONS = [
-    "cogs.economy.stats",
-    "cogs.economy.rankings",
-    "cogs.games.coinflip",
-    "cogs.games.trivia",
+	"cogs.economy.stats",
+	"cogs.economy.rankings",
+	"cogs.games.coinflip",
+	"cogs.games.trivia",
 ]
 
 
 async def load_extensions(bot: commands.Bot) -> None:
-    for extension in EXTENSIONS:
-        # Try to load extensions
-        try:
-            await bot.load_extension(extension)
-        except Exception as e:
-            print(e)
+	for extension in EXTENSIONS:
+		# Try to load extensions
+		try:
+			await bot.load_extension(extension)
+		except Exception as e:
+			print(e)
 
 
 def main():
-    intents = discord.Intents.default()
+	intents = discord.Intents.default()
 
-    db = Database(str(os.getenv("MONGO_URI")))
-    bot = commands.Bot(command_prefix="!", intents=intents)
-    bot.db = db  # attach db to bot so cogs can access it via bot.db
+	db = Database(str(os.getenv("MONGO_URI")))
+	bot = commands.Bot(command_prefix="!", intents=intents)
+	bot.db = db  # attach db to bot so cogs can access it via bot.db
 
-    @bot.event
-    async def on_ready():
-        # sync registers slash commands with Discord globally
-        await bot.tree.sync()
-        print(f"Bot initialized as: {bot.user}")
+	# Channel to post logs
+	# log_channel = 123456789012345678
 
-    # setup_hook runs before the bot connects, so cogs are ready before on_ready fires
-    async def setup_hook():
-        await load_extensions(bot)
+	# Read log level from environment (default to ERROR)
+	# LOG_LEVEL = os.getenv("POSTING_LOG_LEVEL", "ERROR").upper()
+	# LOG_LEVEL = getattr(logging, LOG_LEVEL, logging.ERROR)
 
-    bot.setup_hook = setup_hook
+	@bot.event
+	async def on_ready():
+		# sync registers slash commands with Discord globally
+		await bot.tree.sync()
+		print(f"Bot initialized as: {bot.user}")
 
-    bot.run(str(os.getenv("DISCORD_TOKEN")))
+	# setup_hook runs before the bot connects, so cogs are ready before on_ready fires
+	async def setup_hook():
+		await load_extensions(bot)
+
+		# Attach logging handler
+		# handler = DiscordLogHandler(bot, log_channel)
+		# handler.setLevel(logging.ERROR)
+
+		# logger = logging.getLogger("discord")
+		# logger.setLevel(logging.ERROR)
+		# logger.addHandler(handler)
+
+	bot.setup_hook = setup_hook
+
+	bot.run(str(os.getenv("DISCORD_TOKEN")))
 
 
 if __name__ == "__main__":
-    main()
+	main()
