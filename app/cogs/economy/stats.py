@@ -58,7 +58,7 @@ class Stats(commands.Cog):
 		embed.add_field(name="Blackjack W/L", value=b_ratio, inline=True)
 
 		# Jokes
-		jokes = user.get("jokes", {})
+		jokes = user.get("joke", {})
 		jokes_told = jokes.get("wins", 0)
 		embed.add_field(name="Jokes Told", value=jokes_told, inline=True)
 
