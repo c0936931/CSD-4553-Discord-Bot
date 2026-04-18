@@ -41,11 +41,11 @@ def main():
 	bot.db = db  # attach db to bot so cogs can access it via bot.db
 
 	# Channel to post logs
-	# log_channel = 123456789012345678
+	log_channel = 1495124858214940874
 
 	# Read log level from environment (default to ERROR)
-	# LOG_LEVEL = os.getenv("POSTING_LOG_LEVEL", "ERROR").upper()
-	# LOG_LEVEL = getattr(logging, LOG_LEVEL, logging.ERROR)
+	LOG_LEVEL = os.getenv("POSTING_LOG_LEVEL", "ERROR").upper()
+	LOG_LEVEL = getattr(logging, LOG_LEVEL, logging.ERROR)
 
 	@bot.event
 	async def on_ready():
@@ -58,12 +58,12 @@ def main():
 		await load_extensions(bot)
 
 		# Attach logging handler
-		# handler = DiscordLogHandler(bot, log_channel)
-		# handler.setLevel(logging.ERROR)
+		handler = DiscordLogHandler(bot, log_channel)
+		handler.setLevel(logging.ERROR)
 
-		# logger = logging.getLogger("discord")
-		# logger.setLevel(logging.ERROR)
-		# logger.addHandler(handler)
+		logger = logging.getLogger("discord")
+		logger.setLevel(logging.ERROR)
+		logger.addHandler(handler)
 
 	bot.setup_hook = setup_hook
 
