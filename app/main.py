@@ -16,8 +16,11 @@ load_dotenv()
 EXTENSIONS = [
 	"cogs.economy.stats",
 	"cogs.economy.rankings",
+	"cogs.economy.cheat",
 	"cogs.games.coinflip",
 	"cogs.games.trivia",
+	"cogs.games.joke",
+	"cogs.games.blackjack",
 ]
 
 
