@@ -18,6 +18,7 @@ jobs:
         run: |
           "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" | Out-File -FilePath .env -Encoding UTF8
           "MONGO_URI=${{ secrets.MONGO_URI }}" | Out-File -FilePath .env -Append -Encoding UTF8
+          "POSTING_LOG_LEVEL=ERROR" | Out-File -FilePath .env -Append -Encoding UTF8
 
       - name: Run docker compose
         shell: powershell
