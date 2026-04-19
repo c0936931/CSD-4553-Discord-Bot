@@ -21,6 +21,7 @@ EXTENSIONS = [
 	"cogs.games.trivia",
 	"cogs.games.joke",
 	"cogs.games.blackjack",
+	"cogs.games.rps",
 ]
 
 
