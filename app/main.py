@@ -75,7 +75,8 @@ def main():
 			discord_handler.setFormatter(formatter)
 
 			logging.getLogger().addHandler(discord_handler)
-			logging.debug("Discord logging handler attached.")
+
+			logging.debug("Discord logging handler attached!")
 
 		logging.info("Bot online")
 

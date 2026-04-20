@@ -1,5 +1,5 @@
+# logger.py
 import logging
-import asyncio
 
 
 class DiscordLogHandler(logging.Handler):
@@ -9,12 +9,19 @@ class DiscordLogHandler(logging.Handler):
 		self.channel_id = channel_id
 		self.channel = None
 
-	async def _send(self, message):
+	async def _ensure_channel(self):
 		if self.channel is None:
+			await self.bot.wait_until_ready()
 			self.channel = self.bot.get_channel(self.channel_id)
+
+	async def _send(self, message):
+		await self._ensure_channel()
 		if self.channel:
 			await self.channel.send(f"```{message}```")
 
 	def emit(self, record):
-		log_entry = self.format(record)
-		asyncio.create_task(self._send(log_entry))
+		try:
+			log_entry = self.format(record)
+			self.bot.loop.create_task(self._send(log_entry))
+		except Exception as e:
+			print("Logging error:", e)
