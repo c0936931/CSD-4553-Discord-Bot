@@ -29,6 +29,7 @@ class Database:
                 "games_played": 0,
                 "coinflip": {"wins": 0, "losses": 0},
                 "trivia": {"wins": 0, "losses": 0},
+                "dice": {"wins": 0, "losses": 0},
                 "cooldowns": {},
             }
             await self.users.insert_one(user)
