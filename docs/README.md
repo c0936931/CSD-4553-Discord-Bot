@@ -1,4 +1,5 @@
 # Discord Currency & Minigame Bot
+[![Deploy python app](https://github.com/c0936931/CSD-4553-Discord-Bot/actions/workflows/deploy.yml/badge.svg)](https://github.com/c0936931/CSD-4553-Discord-Bot/actions/workflows/deploy.yml)
 
 A Discord bot with slash commands, minigames, and persistent coin balances stored in MongoDB Atlas. Runs in Docker.
 
