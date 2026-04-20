@@ -2,6 +2,7 @@ import aiohttp
 import discord
 from discord import app_commands
 from discord.ext import commands
+import logging
 
 
 class Joke(commands.Cog):
@@ -13,6 +14,9 @@ class Joke(commands.Cog):
 	async def joke(self, interaction: discord.Interaction) -> None:
 		# Defer the response
 		await interaction.response.defer(thinking=True)
+
+		# Test
+		logging.debug("Joke command run")
 
 		# Create session
 		async with aiohttp.ClientSession() as session:
