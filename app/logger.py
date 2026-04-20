@@ -20,20 +20,19 @@ class DiscordLogHandler(logging.Handler):
 		if self.channel:
 			await self.channel.send(f"```{message}```")
 
+	def emit(self, record):
+		try:
+			# Determine source label
+			if record.name.startswith("discord"):
+				source = "DISCORD.PY"
+			elif record.name == "root":
+				source = "ROOT"
+			else:
+				# For cogs or custom modules
+				source = record.name.upper()
 
-def emit(self, record):
-	try:
-		# Determine source label
-		if record.name.startswith("discord"):
-			source = "DISCORD.PY"
-		elif record.name == "root":
-			source = "ROOT"
-		else:
-			# For cogs or custom modules
-			source = record.name.upper()
+			log_entry = f"[{source}] {self.format(record)}"
+			asyncio.create_task(self._send(log_entry))
 
-		log_entry = f"[{source}] {self.format(record)}"
-		asyncio.create_task(self._send(log_entry))
-
-	except Exception as e:
-		print("Logging error:", e)
+		except Exception as e:
+			print("Logging error:", e)
