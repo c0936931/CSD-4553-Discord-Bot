@@ -66,6 +66,9 @@ def main():
 	bot.db = db  # attach db to bot so cogs can access it via bot.db
 
 	if LOG_CHANNEL:
+		# Set root log level
+		logging.getLogger().setLevel(logging.DEBUG)
+
 		discord_handler = DiscordLogHandler(
 			bot=bot,
 			channel_id=LOG_CHANNEL,
