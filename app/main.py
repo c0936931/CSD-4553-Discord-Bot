@@ -8,13 +8,6 @@ from logger import DiscordLogHandler
 
 load_dotenv()
 
-# Validate required env
-def require_env(key: str) -> str:
-	value = os.getenv(key)
-	if value is None or value.strip() == "":
-		raise EnvironmentError(f"Missing required environment variable: {key}")
-	return value
-
 
 EXTENSIONS = [
 	"cogs.economy.stats",
@@ -26,6 +19,14 @@ EXTENSIONS = [
 	"cogs.games.blackjack",
 	"cogs.games.rps",
 ]
+
+
+# Validate required env
+def require_env(key: str) -> str:
+	value = os.getenv(key)
+	if value is None or value.strip() == "":
+		raise EnvironmentError(f"Missing required environment variable: {key}")
+	return value
 
 
 async def load_extensions(bot: commands.Bot) -> None:
@@ -43,13 +44,18 @@ def main():
 
 	# Optional - If missing skip logging
 	LOG_CHANNEL = os.getenv("LOG_CHANNEL")
-	LOG_LEVEL = os.getenv("LOG_LEVEL", "ERROR").upper()
-	LOG_LEVEL = getattr(logging, LOG_LEVEL, logging.ERROR)
+	CHANNEL_LOG_LEVEL = os.getenv("CHANNEL_LOG_LEVEL", "INFO").upper()
 
+	if LOG_CHANNEL:
+		LOG_CHANNEL = int(LOG_CHANNEL)
+		CHANNEL_LOG_LEVEL = getattr(logging, CHANNEL_LOG_LEVEL, logging.INFO)
+
+	# Bot setup
 	intents = discord.Intents.default()
-
-	db = Database(MONGO_URI)
 	bot = commands.Bot(command_prefix="!", intents=intents)
+
+	# Add db to bot
+	db = Database(MONGO_URI)
 	bot.db = db
 
 	@bot.event
@@ -57,19 +63,24 @@ def main():
 		await bot.tree.sync()
 		print(f"Bot initialized as: {bot.user}")
 
+		# Attach after bot ready
+		if LOG_CHANNEL:
+			discord_handler = DiscordLogHandler(
+				bot=bot,
+				channel_id=LOG_CHANNEL,
+				level=CHANNEL_LOG_LEVEL
+			)
+
+			formatter = logging.Formatter("[%(levelname)s] %(message)s")
+			discord_handler.setFormatter(formatter)
+
+			logging.getLogger().addHandler(discord_handler)
+			logging.debug("Discord logging handler attached.")
+
+		logging.info("Bot online")
+
 	async def setup_hook():
 		await load_extensions(bot)
-
-		# Only attach Discord logging if LOG_CHANNEL is set
-		if LOG_CHANNEL:
-			handler = DiscordLogHandler(bot, LOG_CHANNEL)
-			handler.setLevel(logging.ERROR)
-
-			logger = logging.getLogger("discord")
-			logger.setLevel(logging.ERROR)
-			logger.addHandler(handler)
-		else:
-			print("LOG_CHANNEL not set — Discord logging disabled.")
 
 	bot.setup_hook = setup_hook
 

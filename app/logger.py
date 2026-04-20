@@ -1,30 +1,20 @@
 import logging
-import discord  # noqa: F401
+import asyncio
 
 
 class DiscordLogHandler(logging.Handler):
-	def __init__(self, bot, channel_id):
-		super().__init__()
+	def __init__(self, bot, channel_id, level=logging.INFO):
+		super().__init__(level)
 		self.bot = bot
 		self.channel_id = channel_id
+		self.channel = None
 
-	async def send_log(self, record):
-		channel = self.bot.get_channel(self.channel_id)
-		if not channel:
-			return
-
-		level = record.levelname
-		message = record.getMessage()
-
-		formatted = (
-			f"📝 **{level}** log entry:\n"
-			f"```{message}```"
-		)
-
-		await channel.send(formatted)
+	async def _send(self, message):
+		if self.channel is None:
+			self.channel = self.bot.get_channel(self.channel_id)
+		if self.channel:
+			await self.channel.send(f"```{message}```")
 
 	def emit(self, record):
-		try:
-			self.bot.loop.create_task(self.send_log(record))
-		except RuntimeError:
-			pass
+		log_entry = self.format(record)
+		asyncio.create_task(self._send(log_entry))
