@@ -29,7 +29,7 @@ EXTENSIONS = [
 def require_env(key: str) -> str:
 	value = os.getenv(key)
 	if value is None or value.strip() == "":
-		logging.error(f"Missing required environment variable: {key}")
+		raise EnvironmentError(f"Missing required environment variable: {key}")
 
 	return value
 
@@ -45,8 +45,8 @@ async def load_extensions(bot: commands.Bot) -> None:
 
 def main():
 	# Validate required environment variables
-	MONGO_URI = require_env("MONGO_URI")
-	DISCORD_TOKEN = require_env("DISCORD_TOKEN")
+	MONGO_URI = str(require_env("MONGO_URI"))
+	DISCORD_TOKEN = str(require_env("DISCORD_TOKEN"))
 
 	# Optional - If missing skip logging
 	LOG_CHANNEL = os.getenv("LOG_CHANNEL")
@@ -61,7 +61,7 @@ def main():
 	bot = commands.Bot(command_prefix="!", intents=intents)
 
 	# Add db to bot
-	db = Database(str(os.getenv("MONGO_URI")))
+	db = Database(MONGO_URI)
 	bot.db = db  # attach db to bot so cogs can access it via bot.db
 
 	@bot.event
@@ -93,7 +93,7 @@ def main():
 
 	bot.setup_hook = setup_hook
 
-	bot.run(str(os.getenv("DISCORD_TOKEN")))
+	bot.run(DISCORD_TOKEN)
 
 
 if __name__ == "__main__":
