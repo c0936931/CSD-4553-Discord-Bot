@@ -8,7 +8,11 @@ import logging
 
 load_dotenv()
 
-
+# Each entry here is the module path to a cog file (relative to the app/ folder).
+# To add a new command:
+#   1. Create a new file in cogs/economy/ or cogs/games/ following the pattern (see rankings.py for a documented command)
+#   2. Add its path to this list (e.g. "cogs.economy.mycommand")
+#   3. Restart the bot, it will load automatically
 EXTENSIONS = [
 	"cogs.economy.stats",
 	"cogs.economy.rankings",
@@ -32,16 +36,17 @@ def require_env(key: str) -> str:
 
 async def load_extensions(bot: commands.Bot) -> None:
 	for extension in EXTENSIONS:
+		# Try to load extensions
 		try:
 			await bot.load_extension(extension)
 		except Exception as e:
-			print(f"Failed to load extension {extension}: {e}")
+			logging.warning(f"Failed to load extension {extension}: {e}")
 
 
 def main():
 	# Validate required environment variables
-	MONGO_URI = str(require_env("MONGO_URI"))
-	DISCORD_TOKEN = str(require_env("DISCORD_TOKEN"))
+	MONGO_URI = require_env("MONGO_URI")
+	DISCORD_TOKEN = require_env("DISCORD_TOKEN")
 
 	# Optional - If missing skip logging
 	LOG_CHANNEL = os.getenv("LOG_CHANNEL")
@@ -56,11 +61,12 @@ def main():
 	bot = commands.Bot(command_prefix="!", intents=intents)
 
 	# Add db to bot
-	db = Database(MONGO_URI)
-	bot.db = db
+	db = Database(str(os.getenv("MONGO_URI")))
+	bot.db = db  # attach db to bot so cogs can access it via bot.db
 
 	@bot.event
 	async def on_ready():
+		# sync registers slash commands with Discord globally
 		await bot.tree.sync()
 		print(f"Bot initialized as: {bot.user}")
 
@@ -81,12 +87,13 @@ def main():
 
 		# logging.info("Bot online")
 
+	# setup_hook runs before the bot connects, so cogs are ready before on_ready fires
 	async def setup_hook():
 		await load_extensions(bot)
 
 	bot.setup_hook = setup_hook
 
-	bot.run(DISCORD_TOKEN)
+	bot.run(str(os.getenv("DISCORD_TOKEN")))
 
 
 if __name__ == "__main__":
