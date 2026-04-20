@@ -16,7 +16,7 @@ class Joke(commands.Cog):
 		await interaction.response.defer(thinking=True)
 
 		# Test
-		logging.debug("Joke command run")
+		logging.warning("Joke command run")
 
 		# Create session
 		async with aiohttp.ClientSession() as session:
