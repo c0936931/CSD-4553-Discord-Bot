@@ -10,6 +10,7 @@ A Discord bot with slash commands, minigames, and persistent coin balances store
 - `/trivia` — answer a trivia question to earn coins (reward scales with difficulty)
 - `/blackjack` — play a game of blackjack to earn coins
 - `/joke` — get told a random joke
+- `/rps` — play a game of rock paper scissors and earn coins
 
 ## Tech Stack
 
