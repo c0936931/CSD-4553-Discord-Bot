@@ -4,10 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches: ["main"]
-    paths-ignore:
-      - "README.md"
-      - "docs/**"
-      - "*.md"
+    # paths-ignore:
+    #   - "README.md"
+    #   - "docs/**"
+    #   - "*.md"
 
 jobs:
   deploy:
@@ -22,8 +22,8 @@ jobs:
         run: |
           "DISCORD_TOKEN=${{ secrets.DISCORD_TOKEN }}" | Out-File -FilePath .env -Encoding UTF8
           "MONGO_URI=${{ secrets.MONGO_URI }}" | Out-File -FilePath .env -Append -Encoding UTF8
-          "LOG_CHANNEL=${{ secrets.LOG_CHANNEL }}" | Out-File -FilePath .env -Encoding UTF8
-          "CHANNEL_LOG_LEVEL=DEBUG" | Out-File -FilePath .env -Append -Encoding UTF8
+        # "LOG_CHANNEL=${{ secrets.LOG_CHANNEL }}" | Out-File -FilePath .env -Encoding UTF8
+        # "CHANNEL_LOG_LEVEL=DEBUG" | Out-File -FilePath .env -Append -Encoding UTF8
 
       - name: Run docker compose
         shell: powershell

@@ -4,7 +4,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from db import Database
 import logging
-from logger import DiscordLogHandler
+# from logger import DiscordLogHandler
 
 load_dotenv()
 
@@ -25,28 +25,44 @@ EXTENSIONS = [
 ]
 
 
+# Validate required env
+def require_env(key: str) -> str:
+	value = os.getenv(key)
+	if value is None or value.strip() == "":
+		logging.error(f"Missing required environment variable: {key}")
+
+	return value
+
+
 async def load_extensions(bot: commands.Bot) -> None:
 	for extension in EXTENSIONS:
 		# Try to load extensions
 		try:
 			await bot.load_extension(extension)
 		except Exception as e:
-			print(e)
+			logging.warning(f"Failed to load extension {extension}: {e}")
 
 
 def main():
+	# Validate required environment variables
+	MONGO_URI = require_env("MONGO_URI")
+	DISCORD_TOKEN = require_env("DISCORD_TOKEN")
+
+	# Optional - If missing skip logging
+	LOG_CHANNEL = os.getenv("LOG_CHANNEL")
+	CHANNEL_LOG_LEVEL = os.getenv("CHANNEL_LOG_LEVEL", "INFO").upper()
+
+	if LOG_CHANNEL:
+		LOG_CHANNEL = int(LOG_CHANNEL)
+		CHANNEL_LOG_LEVEL = getattr(logging, CHANNEL_LOG_LEVEL, logging.INFO)
+
+	# Bot setup
 	intents = discord.Intents.default()
-
-	db = Database(str(os.getenv("MONGO_URI")))
 	bot = commands.Bot(command_prefix="!", intents=intents)
+
+	# Add db to bot
+	db = Database(str(os.getenv("MONGO_URI")))
 	bot.db = db  # attach db to bot so cogs can access it via bot.db
-
-	# Channel to post logs
-	log_channel = 1495124858214940874
-
-	# Read log level from environment (default to ERROR)
-	LOG_LEVEL = os.getenv("POSTING_LOG_LEVEL", "ERROR").upper()
-	LOG_LEVEL = getattr(logging, LOG_LEVEL, logging.ERROR)
 
 	@bot.event
 	async def on_ready():
@@ -54,17 +70,26 @@ def main():
 		await bot.tree.sync()
 		print(f"Bot initialized as: {bot.user}")
 
+		# # Attach after bot ready
+		# if LOG_CHANNEL:
+		# 	discord_handler = DiscordLogHandler(
+		# 		bot=bot,
+		# 		channel_id=LOG_CHANNEL,
+		# 		level=CHANNEL_LOG_LEVEL
+		# 	)
+
+		# 	formatter = logging.Formatter("[%(levelname)s] %(message)s")
+		# 	discord_handler.setFormatter(formatter)
+
+		# 	logging.getLogger().addHandler(discord_handler)
+
+		# 	logging.debug("Discord logging handler attached!")
+
+		# logging.info("Bot online")
+
 	# setup_hook runs before the bot connects, so cogs are ready before on_ready fires
 	async def setup_hook():
 		await load_extensions(bot)
-
-		# Attach logging handler
-		handler = DiscordLogHandler(bot, log_channel)
-		handler.setLevel(logging.ERROR)
-
-		logger = logging.getLogger("discord")
-		logger.setLevel(logging.ERROR)
-		logger.addHandler(handler)
 
 	bot.setup_hook = setup_hook
 
