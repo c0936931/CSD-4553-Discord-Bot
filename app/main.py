@@ -4,7 +4,7 @@ from discord.ext import commands
 from dotenv import load_dotenv
 from db import Database
 import logging
-from logger import DiscordLogHandler
+# from logger import DiscordLogHandler
 
 load_dotenv()
 
@@ -63,22 +63,22 @@ def main():
 		await bot.tree.sync()
 		print(f"Bot initialized as: {bot.user}")
 
-		# Attach after bot ready
-		if LOG_CHANNEL:
-			discord_handler = DiscordLogHandler(
-				bot=bot,
-				channel_id=LOG_CHANNEL,
-				level=CHANNEL_LOG_LEVEL
-			)
+		# # Attach after bot ready
+		# if LOG_CHANNEL:
+		# 	discord_handler = DiscordLogHandler(
+		# 		bot=bot,
+		# 		channel_id=LOG_CHANNEL,
+		# 		level=CHANNEL_LOG_LEVEL
+		# 	)
 
-			formatter = logging.Formatter("[%(levelname)s] %(message)s")
-			discord_handler.setFormatter(formatter)
+		# 	formatter = logging.Formatter("[%(levelname)s] %(message)s")
+		# 	discord_handler.setFormatter(formatter)
 
-			logging.getLogger().addHandler(discord_handler)
+		# 	logging.getLogger().addHandler(discord_handler)
 
-			logging.debug("Discord logging handler attached!")
+		# 	logging.debug("Discord logging handler attached!")
 
-		logging.info("Bot online")
+		# logging.info("Bot online")
 
 	async def setup_hook():
 		await load_extensions(bot)
