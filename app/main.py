@@ -25,7 +25,8 @@ EXTENSIONS = [
 def require_env(key: str) -> str:
 	value = os.getenv(key)
 	if value is None or value.strip() == "":
-		raise EnvironmentError(f"Missing required environment variable: {key}")
+		logging.error(f"Missing required environment variable: {key}")
+
 	return value
 
 
@@ -39,8 +40,8 @@ async def load_extensions(bot: commands.Bot) -> None:
 
 def main():
 	# Validate required environment variables
-	MONGO_URI = require_env("MONGO_URI")
-	DISCORD_TOKEN = require_env("DISCORD_TOKEN")
+	MONGO_URI = str(require_env("MONGO_URI"))
+	DISCORD_TOKEN = str(require_env("DISCORD_TOKEN"))
 
 	# Optional - If missing skip logging
 	LOG_CHANNEL = os.getenv("LOG_CHANNEL")
