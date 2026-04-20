@@ -58,6 +58,7 @@ def main():
 
 	# Bot setup
 	intents = discord.Intents.default()
+	intents.guilds = True   # needed for logging
 	bot = commands.Bot(command_prefix="!", intents=intents)
 
 	# Add db to bot
@@ -66,11 +67,9 @@ def main():
 
 	@bot.event
 	async def on_ready():
-		# sync registers slash commands with Discord globally
 		await bot.tree.sync()
 		print(f"Bot initialized as: {bot.user}")
 
-		# Attach after bot ready
 		if LOG_CHANNEL:
 			discord_handler = DiscordLogHandler(
 				bot=bot,
@@ -81,7 +80,14 @@ def main():
 			formatter = logging.Formatter("[%(levelname)s] %(message)s")
 			discord_handler.setFormatter(formatter)
 
-			logging.getLogger().addHandler(discord_handler)
+			# Attach to root logger (your logs)
+			root_logger = logging.getLogger()
+			root_logger.addHandler(discord_handler)
+
+			# Attach to discord.py logger (internal logs)
+			discord_logger = logging.getLogger("discord")
+			discord_logger.addHandler(discord_handler)
+			discord_logger.setLevel(logging.INFO)
 
 			logging.debug("Discord logging handler attached!")
 
