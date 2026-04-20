@@ -65,31 +65,31 @@ def main():
 	db = Database(MONGO_URI)
 	bot.db = db  # attach db to bot so cogs can access it via bot.db
 
+	if LOG_CHANNEL:
+		discord_handler = DiscordLogHandler(
+			bot=bot,
+			channel_id=LOG_CHANNEL,
+			level=CHANNEL_LOG_LEVEL
+		)
+
+		formatter = logging.Formatter("[%(levelname)s] %(message)s")
+		discord_handler.setFormatter(formatter)
+
+		# Attach to root logger (your logs)
+		root_logger = logging.getLogger()
+		root_logger.addHandler(discord_handler)
+
+		# Attach to discord.py logger (internal logs)
+		discord_logger = logging.getLogger("discord")
+		discord_logger.addHandler(discord_handler)
+		discord_logger.setLevel(logging.INFO)
+
+		logging.debug("Discord logging handler attached!")
+
 	@bot.event
 	async def on_ready():
 		await bot.tree.sync()
 		print(f"Bot initialized as: {bot.user}")
-
-		if LOG_CHANNEL:
-			discord_handler = DiscordLogHandler(
-				bot=bot,
-				channel_id=LOG_CHANNEL,
-				level=CHANNEL_LOG_LEVEL
-			)
-
-			formatter = logging.Formatter("[%(levelname)s] %(message)s")
-			discord_handler.setFormatter(formatter)
-
-			# Attach to root logger (your logs)
-			root_logger = logging.getLogger()
-			root_logger.addHandler(discord_handler)
-
-			# Attach to discord.py logger (internal logs)
-			discord_logger = logging.getLogger("discord")
-			discord_logger.addHandler(discord_handler)
-			discord_logger.setLevel(logging.INFO)
-
-			logging.debug("Discord logging handler attached!")
 
 		logging.info("Bot online")
 
