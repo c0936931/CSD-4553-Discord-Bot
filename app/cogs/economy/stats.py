@@ -11,7 +11,7 @@ class Stats(commands.Cog):
 
     @app_commands.command(description="Check your stats")
     async def stats(self, interaction: discord.Interaction) -> None:
-        await interaction.response.defer()
+        await interaction.response.defer() 
         user = await self.db.get_stats(interaction.user.id)
 
         if not user:
