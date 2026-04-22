@@ -48,8 +48,7 @@ cd python-bot-currency
 ```bash
 DISCORD_TOKEN=your_token_here
 MONGO_URI=your_mongo_uri_here
-LOG_CHANNEL=channel_id_to_log_to        # optional
-CHANNEL_LOG_LEVEL=log_level_to_channel  # optional, defaults to INFO
+LOG_FILE_LEVEL=log_level_here  # optional, defaults to INFO
 ```
 
 ### 3. Start the bot
