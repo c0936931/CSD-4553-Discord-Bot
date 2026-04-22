@@ -35,8 +35,10 @@ class RockPaperScissors(commands.Cog):
         choice: app_commands.Choice[str],
         bet: int
     ):
+        await interaction.response.defer()
+
         if bet <= 0:
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 "Bet amount must be more than 0 coins.",
                 ephemeral=True
             )
@@ -50,7 +52,7 @@ class RockPaperScissors(commands.Cog):
         balance = user.get("balance", 0)
 
         if balance < bet:
-            await interaction.response.send_message(
+            await interaction.followup.send(
                 f"You do not have enough coins. Your balance is **{balance}** coins.",
                 ephemeral=True
             )
@@ -112,7 +114,7 @@ class RockPaperScissors(commands.Cog):
             inline=False
         )
 
-        await interaction.response.send_message(embed=embed)
+        await interaction.followup.send(embed=embed)
 
 
 async def setup(bot: commands.Bot):
