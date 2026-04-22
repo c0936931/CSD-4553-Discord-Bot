@@ -1,10 +1,9 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-import asyncio
 from db import Database
 from configs import COIN_EMOJI
-import random									# Used for shuffle
+import random
 import logging
 
 DECKS = 6            # Number of decks in the shoe
@@ -18,7 +17,7 @@ cards = {
 	"AD": "🃁", "2D": "🃂", "3D": "🃃", "4D": "🃄", "5D": "🃅", "6D": "🃆", "7D": "🃇", "8D": "🃈", "9D": "🃉", "0D": "🃊", "JD": "🃋", "QD": "🃍", "KD": "🃎",
 	"J": "🃏", "--": "🂠"}
 
-# Values and suits (0 is 10)
+# Card values and suits (0 is 10)
 values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "0", "J", "Q", "K"]
 suits = ["H", "D", "S", "C"]
 
@@ -79,12 +78,11 @@ class Shoe():
 		return card
 
 
+# View class (for buttons)
 class BlackjackView(discord.ui.View):
-	# Blackjack UI
 	def __init__(self, cog, interaction, shoe, dealer_cards, player_cards, wager, msg):
-		super().__init__(timeout=30)
-
-		# Store references needed
+		super().__init__(timeout=60)  # 60s timeout
+		self.cog = cog
 		self.interaction = interaction
 		self.shoe = shoe
 		self.dealer_cards = dealer_cards
@@ -92,68 +90,75 @@ class BlackjackView(discord.ui.View):
 		self.wager = wager
 		self.msg = msg
 
-	async def update_embed(self, hide_dealer=True):
-		# Update embed including values
-		dealer_value = self.cards_value(self.dealer_cards)
-		player_value = self.cards_value(self.player_cards)
+		# Get current values
+		self.player_value = cog.cards_value(player_cards)
+		self.dealer_value = cog.cards_value(dealer_cards)
 
-		embed = self.build_embed(
+		# To signal the main command when done
+		self.finished = False
+
+	# Update the embed
+	async def update_embed(self):
+		embed = self.cog.build_embed(
 			self.dealer_cards,
-			dealer_value,
+			self.dealer_value,
 			self.player_cards,
-			player_value,
-			hide_dealer=hide_dealer
+			self.player_value,
+			hide_dealer=True
 		)
-
 		await self.msg.edit(embed=embed, view=self)
 
+	# Hit button
 	@discord.ui.button(label="Hit", style=discord.ButtonStyle.green)
 	async def hit_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-		# Hit button
+		# Not your game
+		if interaction.user.id != self.interaction.user.id:
+			return await interaction.response.send_message("This is not your game.", ephemeral=True)
 
-		# Prevent other users from clicking
-		if interaction.user != self.interaction.user:
-			return await interaction.response.send_message("This isn't your game!", ephemeral=True)
+		# Deal card
+		self.player_cards, self.player_value = self.cog.hit(self.player_cards, self.shoe)
 
-		# Deal a card to the player
-		self.player_cards = await self.hit(self.player_cards, self.shoe)
+		# Update embed
+		await interaction.response.defer()
+		await self.update_embed()
 
-		# Update embed with hidden dealer card
-		await self.update_embed(hide_dealer=True)
-
-		# If player hits 21 or busts stop the view
-		if self.cards_value(self.player_cards) >= 21:
+		# Check for bust or blackjack
+		if self.player_value >= 21:
+			self.disable_all()
+			self.finished = True
 			self.stop()
 
-	@discord.ui.button(label="Stand", style=discord.ButtonStyle.red)
+	# Stand button
+	@discord.ui.button(label="Stand", style=discord.ButtonStyle.blurple)
 	async def stand_button(self, interaction: discord.Interaction, button: discord.ui.Button):
-		# Stand button
+		# Not your game
+		if interaction.user.id != self.interaction.user.id:
+			return await interaction.response.send_message("This is not your game.", ephemeral=True)
 
-		if interaction.user != self.interaction.user:
-			return await interaction.response.send_message("This isn't your game!", ephemeral=True)
+		await interaction.response.defer()
 
+		# Return to main command
+		self.disable_all()
+		self.finished = True
 		self.stop()
 
+	# Handle timeout
 	async def on_timeout(self):
-		# Timeout so games don't keep waiting
+		self.disable_all()
+		try:
+			await self.msg.edit(content="⏳ Game timed out.", view=self)
+		except Exception:
+			pass
+		self.stop()
 
+	# Disable buttons
+	def disable_all(self):
 		for child in self.children:
 			child.disabled = True
 
-		embed = discord.Embed(
-			title="⏳ Game timed out.",
-			description="Buttons disabled.",
-			color=discord.Color.dark_grey()
-		)
 
-		await self.msg.edit(embed=embed, view=self)
-
-		# Remove lock so user can play again
-		self.cog.active_games.pop(self.interaction.user.id, None)
-
-
+# Main command
 class Blackjack(commands.Cog):
-	# Main logic
 	def __init__(self, bot: commands.Bot, db: Database) -> None:
 		self.bot = bot
 		self.db = db
@@ -162,20 +167,20 @@ class Blackjack(commands.Cog):
 		self.active_games = {}
 
 	def build_embed(self, dealer_cards, dealer_value, player_cards, player_value, hide_dealer=False):
-		# Create embed
-		shown_cards = dealer_cards.copy()
-		shown_value = dealer_value
-
-		# Hide dealer's first card only if they have at least 2 cards
-		if hide_dealer and len(dealer_cards) >= 2:
+		# Hide dealer's first card
+		if hide_dealer:
 			shown_cards = ["--"] + dealer_cards[1:]
-			shown_value = self.cards_value(dealer_cards[1:])
+			dealer_value = self.cards_value(dealer_cards[1:])
+		else:
+			shown_cards = dealer_cards.copy()
 
+		# Get emoji
 		dealer_str = " ".join(get_card(c) for c in shown_cards)
 		player_str = " ".join(get_card(c) for c in player_cards)
 
+		# Create embed
 		embed = discord.Embed(title="🃏 Blackjack", color=discord.Color.dark_green())
-		embed.add_field(name=f"Dealer ({shown_value})", value=dealer_str or "No cards", inline=False)
+		embed.add_field(name=f"Dealer ({dealer_value})", value=dealer_str or "No cards", inline=False)
 		embed.add_field(name=f"You ({player_value})", value=player_str or "No cards", inline=False)
 		return embed
 
@@ -203,11 +208,12 @@ class Blackjack(commands.Cog):
 		else:
 			return total + aces
 
-	async def hit(self, cards, shoe):
+	def hit(self, cards, shoe):
 		# Get a card with deal speed
 		cards.append(shoe.draw())
-		await asyncio.sleep(DEAL_SPEED)
-		return cards
+
+		# Return new hand + updated value
+		return cards, self.cards_value(cards)
 
 	@app_commands.command(description="Play Blackjack and wager coins")
 	@app_commands.describe(wager="Amount of coins to wager")
@@ -215,6 +221,7 @@ class Blackjack(commands.Cog):
 		# Main command
 		await interaction.response.defer(thinking=True)
 
+		# Log command run
 		logging.info("Command Run: /blackjack")
 
 		# Anti-spam protection
@@ -229,15 +236,19 @@ class Blackjack(commands.Cog):
 
 		# Validate wager
 		if wager <= 0:
+			# Remove from active
 			self.active_games.pop(interaction.user.id, None)
+			# Post message
 			return await interaction.followup.send_message("Wager must be at least 1 coin", ephemeral=True)
 
-		# Fetch user from database
+		# Fetch user data from database
 		user = await self.db.get_user(interaction.user.id, interaction.user.display_name)
 
 		# Check balance
 		if user["balance"] < wager:
+			# Remove from active
 			self.active_games.pop(interaction.user.id, None)
+			# Post message
 			return await interaction.followup.send_message(
 				f"Not enough coins, balance: {user['balance']:,}", ephemeral=True
 			)
@@ -248,13 +259,10 @@ class Blackjack(commands.Cog):
 		player_cards = []
 
 		# Initial deal (2 cards each)
-		player_cards = await self.hit(player_cards, shoe)
-		dealer_cards = await self.hit(dealer_cards, shoe)
-		player_cards = await self.hit(player_cards, shoe)
-		dealer_cards = await self.hit(dealer_cards, shoe)
-
-		dealer_value = self.cards_value(dealer_cards)
-		player_value = self.cards_value(player_cards)
+		player_cards, player_value = self.hit(player_cards, shoe)
+		dealer_cards, dealer_value = self.hit(dealer_cards, shoe)
+		player_cards, player_value = self.hit(player_cards, shoe)
+		dealer_cards, dealer_value = self.hit(dealer_cards, shoe)
 
 		# Send initial embed
 		embed = self.build_embed(dealer_cards, dealer_value, player_cards, player_value, hide_dealer=True)
@@ -267,67 +275,60 @@ class Blackjack(commands.Cog):
 		# Wait for player to finish turn
 		await view.wait()
 
-		# PLAYER BUST
-		if self.cards_value(view.player_cards) > 21:
-			await self.db.update_balance(interaction.user.id, -wager)
-			await self.db.record_game(interaction.user.id, "blackjack", False)
+		# Get player cards
+		player_cards = view.player_cards
+		player_value = self.cards_value(player_cards)
 
-			final = self.build_embed(
-				view.dealer_cards,
-				self.cards_value(view.dealer_cards),
-				view.player_cards,
-				self.cards_value(view.player_cards)
-			)
-			final.title = f"💀 Bust! You lost {wager:,} {COIN_EMOJI}"
-			final.color = discord.Color.red()
-
-			for child in view.children:
-				child.disabled = True
-
-			self.active_games.pop(interaction.user.id, None)
-			return await msg.edit(embed=final, view=view)
-
-		# DEALER TURN — dealer hits until 17+
-		while self.cards_value(view.dealer_cards) < 17:
-			view.dealer_cards = await self.hit(view.dealer_cards, shoe)
-
-		dealer_value = self.cards_value(view.dealer_cards)
-		player_value = self.cards_value(view.player_cards)
+		# Dealer hits until more than 16
+		while dealer_value < 17:
+			dealer_cards, dealer_value = self.hit(view.dealer_cards, shoe)
 
 		# Determine winner
-		if dealer_value > 21:
+		if player_value == 21:
 			won = True
+			title = f"🃏 Blackjack! You won {wager:,} {COIN_EMOJI}"
+		elif player_value > 21:
+			won = False
+			title = f"🃏 Bust! You lost {wager:,} {COIN_EMOJI}"
+		elif dealer_value == 21:
+			won = False
+			title = f"🃏 Dealer Blackjack! You lost {wager:,} {COIN_EMOJI}"
+		elif dealer_value > 21:
+			won = True
+			title = f"🃏 Dealer Bust! You won {wager:,} {COIN_EMOJI}"
 		elif dealer_value < player_value:
 			won = True
+			title = f"🃏 Player Higher! You won {wager:,} {COIN_EMOJI}"
 		elif dealer_value > player_value:
 			won = False
+			title = f"🃏 Dealer Higher! You lost {wager:,} {COIN_EMOJI}"
 		else:
 			won = None  # Push
+			title = f"🃏 Push! Returned bet of {wager:,} {COIN_EMOJI}"
 
 		# Payout logic
 		if won is True:
+			# Won
 			await self.db.update_balance(interaction.user.id, wager)
 			await self.db.record_game(interaction.user.id, "blackjack", True)
 			new_balance = user["balance"] + wager
-			title = f"🎉 You won {wager:,} {COIN_EMOJI}!"
 			color = discord.Color.green()
-
 		elif won is False:
+			# Lost
 			await self.db.update_balance(interaction.user.id, -wager)
 			await self.db.record_game(interaction.user.id, "blackjack", False)
 			new_balance = user["balance"] - wager
-			title = f"💀 You lost {wager:,} {COIN_EMOJI}"
 			color = discord.Color.red()
 		else:
+			# Push
 			new_balance = user["balance"]
-			title = "🤝 Push — no coins won or lost"
 			color = discord.Color.yellow()
 
 		# Build final embed
-		final = self.build_embed(view.dealer_cards, dealer_value, view.player_cards, player_value)
+		final = self.build_embed(dealer_cards, dealer_value, player_cards, player_value)
 		final.title = title
 		final.color = color
-		final.set_footer(text=f"New balance: {new_balance:,} coins")
+		final.set_footer(text=f"New balance: {new_balance:,} {COIN_EMOJI}")
 
 		# Disable buttons
 		for child in view.children:
@@ -336,6 +337,7 @@ class Blackjack(commands.Cog):
 		# Remove anti-spam lock
 		self.active_games.pop(interaction.user.id, None)
 
+		# Post message
 		await msg.edit(embed=final, view=view)
 
 
