@@ -10,7 +10,7 @@ class Stats(commands.Cog):
 		self.bot = bot
 		self.db = db
 
-	@app_commands.command(description="Check your stats")
+	@app_commands.command(name="stats", description="Check your stats")
 	async def stats(self, interaction: discord.Interaction) -> None:
 		await interaction.response.defer()
 
