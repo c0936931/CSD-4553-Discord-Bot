@@ -9,7 +9,7 @@ class Stats(commands.Cog):
 	def __init__(self, bot: commands.Bot, db: Database) -> None:
 		self.bot = bot
 		self.db = db
-		logging.debug("Stats - init")
+		logging.info("Stats - init")
 
 	@app_commands.command(description="Check your stats")
 	async def stats(self, interaction: discord.Interaction) -> None:
@@ -116,4 +116,4 @@ async def setup(bot: commands.Bot) -> None:
 	await bot.add_cog(Stats(bot, bot.db))
 
 
-logging.debug("Stats - bottom")
+logging.info("Stats - bottom")
