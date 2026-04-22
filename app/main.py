@@ -26,7 +26,8 @@ EXTENSIONS = [
 	"cogs.games.rps",
 	"cogs.games.diceroll",
 	"cogs.games.hangman",
-]
+	 "cogs.games.work",
+	]
 
 
 # Validate required env
