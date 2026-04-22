@@ -26,6 +26,9 @@ EXTENSIONS = [
 	"cogs.games.rps",
 	"cogs.games.diceroll",
 	"cogs.games.hangman",
+	"cogs.games.slots",
+    "cogs.games.work",
+     "cogs.games.rob",
 ]
 
 
