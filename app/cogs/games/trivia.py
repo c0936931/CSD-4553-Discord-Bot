@@ -105,8 +105,9 @@ class Trivia(commands.Cog):
         view = TriviaView(interaction.user.id, correct_label, reward, self.db)
 
         for label, answer in zip(labels, answers):
+            display_answer = answer if len(answer) <= 75 else answer[:72] + "..."
             button = discord.ui.Button(
-                label=f"{label}: {answer}",
+                label=f"{label}: {display_answer}",
                 style=discord.ButtonStyle.primary,
                 custom_id=label,
             )
@@ -127,3 +128,6 @@ class Trivia(commands.Cog):
 
 async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(Trivia(bot, bot.db))
+
+
+
