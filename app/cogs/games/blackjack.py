@@ -279,9 +279,11 @@ class Blackjack(commands.Cog):
 		player_cards = view.player_cards
 		player_value = self.cards_value(player_cards)
 
-		# Dealer hits until more than 16
-		while dealer_value < 17:
-			dealer_cards, dealer_value = self.hit(view.dealer_cards, shoe)
+		# Dealer turn
+		if player_value < 21:
+			# Dealer hits until more than 16
+			while dealer_value < 17:
+				dealer_cards, dealer_value = self.hit(view.dealer_cards, shoe)
 
 		# Determine winner
 		if player_value == 21:
