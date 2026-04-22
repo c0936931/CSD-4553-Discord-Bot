@@ -31,7 +31,7 @@ def get_card(card):
 		try:
 			return cards[card]
 		except KeyError:
-			print("Error: card not supported")
+			logging.error("Error: card not supported")
 			raise
 		else:
 			pass
@@ -51,11 +51,6 @@ class Deck():
 		self.cards.extend(self.delt)
 		self.delt = []
 		random.shuffle(self.cards)
-
-	def print(self):
-		for self.card in self.cards:
-			print(get_card(self.card), end="")
-		print()
 
 	def draw(self):
 		card = self.cards.pop()
@@ -77,11 +72,6 @@ class Shoe():
 		self.cards.extend(self.delt)
 		self.delt = []
 		random.shuffle(self.cards)
-
-	def print(self):
-		for self.card in self.cards:
-			print(get_card(self.card), end="")
-		print()
 
 	def draw(self):
 		card = self.cards.pop()
