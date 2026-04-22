@@ -1,14 +1,13 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from db import Database
 import logging
 
 
 class Stats(commands.Cog):
-	def __init__(self, bot: commands.Bot, db: Database) -> None:
+	def __init__(self, bot: commands.Bot) -> None:
 		self.bot = bot
-		self.db = db
+		self.db = bot.db
 		logging.info("Stats - init")
 
 	@app_commands.command(description="Check your stats")
@@ -113,7 +112,7 @@ class Stats(commands.Cog):
 
 
 async def setup(bot: commands.Bot) -> None:
-	await bot.add_cog(Stats(bot, bot.db))
+	await bot.add_cog(Stats(bot))
 
 
 logging.info("Stats - bottom")
