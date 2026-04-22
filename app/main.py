@@ -17,7 +17,8 @@ load_dotenv()
 EXTENSIONS = [
     "cogs.economy.stats",
     "cogs.economy.rankings",
-    "cogs.economy.cheat",
+    "cogs.admin.cheat",
+    "cogs.admin.showlogs",
     "cogs.games.coinflip",
     "cogs.games.trivia",
     "cogs.games.joke",
@@ -52,45 +53,27 @@ def main():
     DISCORD_TOKEN = str(require_env("DISCORD_TOKEN"))
 
     # Optional - If missing skip logging
-    LOG_CHANNEL = os.getenv("LOG_CHANNEL")
-    CHANNEL_LOG_LEVEL = os.getenv("CHANNEL_LOG_LEVEL", "INFO").upper()
-
-    if LOG_CHANNEL:
-    	LOG_CHANNEL = int(LOG_CHANNEL)
-    	CHANNEL_LOG_LEVEL = getattr(logging, CHANNEL_LOG_LEVEL, logging.INFO)
+    LOG_FILE_LEVEL = os.getenv("CHANNEL_LOG_LEVEL", "INFO").upper()
 
     # Bot setup
     intents = discord.Intents.default()
     intents.guilds = True  # needed for logging
     bot = commands.Bot(command_prefix="!", intents=intents)
 
+    # Logging setup
+    if LOG_FILE_LEVEL:
+    	LOG_FILE_LEVEL = getattr(logging, LOG_FILE_LEVEL, logging.INFO)
+
+        # Setup file logging
+        LOG_FILE = setup_file_logger(logging.INFO)
+        logging.info("File logger initialized")
+
+        # Add LOG_FILE to bot
+        bot.log_file = LOG_FILE  # expose log file path to cogs
+
     # Add db to bot
     db = Database(MONGO_URI)
     bot.db = db  # attach db to bot so cogs can access it via bot.db
-
-    if LOG_CHANNEL:
-    	# Set root log level
-    	logging.getLogger().setLevel(logging.DEBUG)
-
-    	discord_handler = DiscordLogHandler(
-    		bot=bot,
-    		channel_id=LOG_CHANNEL,
-    		level=CHANNEL_LOG_LEVEL
-    	)
-
-    	formatter = logging.Formatter("[%(levelname)s] %(message)s")
-    	discord_handler.setFormatter(formatter)
-
-    	# Attach to root logger (your logs)
-    	root_logger = logging.getLogger()
-    	root_logger.addHandler(discord_handler)
-
-    	# Attach to discord.py logger (internal logs)
-    	discord_logger = logging.getLogger("discord")
-    	discord_logger.addHandler(discord_handler)
-    	discord_logger.setLevel(logging.INFO)
-
-    	logging.debug("Discord logging handler attached!")
 
     @bot.event
     async def on_ready():
