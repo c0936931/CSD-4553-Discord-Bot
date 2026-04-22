@@ -64,6 +64,22 @@ class Stats(commands.Cog):
         b_ratio = f"{b_wins}/{b_losses}" if (b_wins + b_losses) > 0 else "N/A"
         embed.add_field(name="Blackjack W/L", value=b_ratio, inline=True)
 
+        # Rock Paper Scissors
+        rps = user.get("rps", {})
+        rps_wins = rps.get("wins", 0)
+        rps_losses = rps.get("losses", 0)
+        rps_ratio = f"{rps_wins}/{rps_losses}" if (rps_wins + rps_losses) > 0 else "N/A"
+        embed.add_field(name="Rock Paper Scissors W/L", value=rps_ratio, inline=True)
+
+        
+        # Treasure Hunt
+        treasure = user.get("treasure", {})
+        th_wins = treasure.get("wins", 0)
+        th_losses = treasure.get("losses", 0)
+        th_ratio = f"{th_wins}/{th_losses}" if (th_wins + th_losses) > 0 else "N/A"
+        embed.add_field(name="Treasure Hunt W/L", value=th_ratio, inline=True)
+        
+
         # Jokes
         jokes = user.get("joke", {})
         jokes_told = jokes.get("wins", 0)
