@@ -50,10 +50,18 @@ class Coins(commands.Cog):
 			return
 
 		db_user = await self.db.get_user(user.id, user.display_name)
+		current_balance = db_user["balance"]
 
-		# Prevent negative balance
-		new_balance = max(0, db_user["balance"] - amount)
-		await self.db.update_balance(user.id, -amount)
+		# Prevent negative balances
+		if amount > current_balance:
+			amount_to_remove = current_balance
+		else:
+			amount_to_remove = amount
+
+		# Apply the negative amount
+		await self.db.update_balance(user.id, -amount_to_remove)
+
+		new_balance = current_balance - amount_to_remove
 
 		embed = discord.Embed(
 			title="💸 Coins Removed",
