@@ -4,6 +4,7 @@ from discord.ext import commands
 import random
 from db import Database
 from configs import COIN_EMOJI
+import logging
 
 WORDS = ["python", "discord", "database", "programming", "hangman", "developer", "async", "function"]
 
@@ -126,6 +127,8 @@ class Hangman(commands.Cog):
 
 	@app_commands.command(description="Play Hangman and guess the word", name="hangman")
 	async def hangman(self, interaction: discord.Interaction):
+
+		logging.info("Command Run: /hangman")
 
 		# Anti-spam
 		if interaction.user.id in self.active_games:

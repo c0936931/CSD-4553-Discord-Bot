@@ -5,6 +5,7 @@ import asyncio
 from db import Database
 from configs import COIN_EMOJI
 import random									# Used for shuffle
+import logging
 
 DECKS = 6            # Number of decks in the shoe
 DEAL_SPEED = 0.5     # Delay between card deals for animation
@@ -223,6 +224,8 @@ class Blackjack(commands.Cog):
 	async def blackjack(self, interaction: discord.Interaction, wager: int) -> None:
 		# Main command
 		await interaction.response.defer(thinking=True)
+
+		logging.info("Command Run: /blackjack")
 
 		# Anti-spam protection
 		if interaction.user.id in self.active_games:

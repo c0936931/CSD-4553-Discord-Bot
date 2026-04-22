@@ -8,6 +8,7 @@ from discord import app_commands
 from discord.ext import commands
 from db import Database
 from configs import TRIVIA_API, TRIVIA_REWARDS
+import logging
 
 
 class TriviaView(discord.ui.View):
@@ -70,6 +71,8 @@ class Trivia(commands.Cog):
 	@app_commands.command(description="Answer a trivia question to earn coins")
 	async def trivia(self, interaction: discord.Interaction) -> None:
 		await interaction.response.defer()
+
+		logging.info("Command Run: /trivia")
 
 		# ensure the user document exists before the callback tries to update balance
 		await self.db.get_user(interaction.user.id, interaction.user.display_name)

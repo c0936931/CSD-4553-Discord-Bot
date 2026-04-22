@@ -3,6 +3,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from db import Database
+import logging
 
 
 class Dice(commands.Cog):
@@ -22,6 +23,8 @@ class Dice(commands.Cog):
 		guess: int,
 	) -> None:
 		await interaction.response.defer()
+
+		logging.info("Command Run: /diceroll")
 
 		# Validate wager
 		if wager <= 0:

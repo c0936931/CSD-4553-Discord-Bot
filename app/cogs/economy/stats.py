@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from db import Database
+import logging
 
 
 class Stats(commands.Cog):
@@ -12,6 +13,9 @@ class Stats(commands.Cog):
 	@app_commands.command(description="Check your stats")
 	async def stats(self, interaction: discord.Interaction) -> None:
 		await interaction.response.defer()
+
+		logging.info("Command Run: /stats")
+
 		user = await self.db.get_stats(interaction.user.id)
 
 		if not user:

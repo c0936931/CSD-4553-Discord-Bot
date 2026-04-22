@@ -4,6 +4,7 @@ from discord import app_commands
 from discord.ext import commands
 from db import Database
 from configs import COIN_EMOJI
+import logging
 
 
 class Coinflip(commands.Cog):
@@ -26,6 +27,8 @@ class Coinflip(commands.Cog):
 		choice: app_commands.Choice[str],
 	) -> None:
 		await interaction.response.defer()
+
+		logging.info("Command Run: /coinflip")
 
 		if wager <= 0:
 			await interaction.followup.send(

@@ -3,6 +3,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from db import Database
+import logging
 
 
 class Work(commands.Cog):
@@ -21,6 +22,8 @@ class Work(commands.Cog):
 	)
 	async def work(self, interaction: discord.Interaction):
 		await interaction.response.defer()
+
+		logging.info("Command Run: /work")
 
 		await self.db.get_user(
 			interaction.user.id,

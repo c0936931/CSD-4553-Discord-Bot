@@ -3,6 +3,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from db import Database
+import logging
 
 
 class Wheel(commands.Cog):
@@ -28,6 +29,8 @@ class Wheel(commands.Cog):
 		bet: int
 	):
 		await interaction.response.defer()
+
+		logging.info("Command Run: /wheel")
 
 		if bet <= 0:
 			await interaction.followup.send(

@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 import os
+import logging
 
 
 class Logs(commands.Cog):
@@ -9,8 +10,10 @@ class Logs(commands.Cog):
 		self.bot = bot
 
 	@app_commands.command(name="downloadlogs", description="Send the bot log file.")
-	async def showlogs(self, interaction: discord.Interaction):
+	async def downloadlogs(self, interaction: discord.Interaction):
 		await interaction.response.defer(thinking=True, ephemeral=True)
+
+		logging.info("Command Run: /downloadlogs")
 
 		# Get log file path
 		log_path = getattr(self.bot, "log_file", "bot.log")

@@ -2,6 +2,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from db import Database
+import logging
 
 # This file is a good starting point to understand how commands work
 # Every command in this bot follows the same pattern as this one
@@ -24,6 +25,8 @@ class Rankings(commands.Cog):
 		# Use interaction.user to get their info (id, name, avatar, etc.)
 		# For commands that make DB calls, defer first then use followup.send()
 		await interaction.response.defer()
+
+		logging.info("Command Run: /rankings")
 
 		top_users = await self.db.get_rankings()
 

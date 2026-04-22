@@ -1,6 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+import logging
 
 
 class Cheat(commands.Cog):
@@ -8,11 +9,13 @@ class Cheat(commands.Cog):
 		self.bot = bot
 		self.db = db
 
-	@app_commands.command(name="cheat", description="Add coins to yourself (admin only)")
+	@app_commands.command(description="Add coins to yourself (admin only)")
 	@app_commands.describe(amount="Amount of coins to add")
 	# @app_commands.checks.has_permissions(administrator=True)
 	async def cheat(self, interaction: discord.Interaction, amount: int):
 		await interaction.response.defer(thinking=True)
+
+		logging.info("Command Run: /cheat")
 
 		if amount <= 0:
 			await interaction.followup.send("Amount must be greater than 0.", ephemeral=True)

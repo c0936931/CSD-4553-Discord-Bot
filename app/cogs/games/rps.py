@@ -3,6 +3,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from db import Database
+import logging
 
 
 class RockPaperScissors(commands.Cog):
@@ -36,6 +37,8 @@ class RockPaperScissors(commands.Cog):
 		bet: int
 	):
 		await interaction.response.defer()
+
+		logging.info("Command Run: /rps")
 
 		if bet <= 0:
 			await interaction.followup.send(

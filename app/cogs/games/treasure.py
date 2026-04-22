@@ -3,6 +3,7 @@ import discord
 from discord.ext import commands
 from discord import app_commands
 from db import Database
+import logging
 
 
 class TreasureView(discord.ui.View):
@@ -131,6 +132,8 @@ class Treasure(commands.Cog):
 	)
 	async def treasure(self, interaction: discord.Interaction):
 		await interaction.response.defer()
+
+		logging.info("Command Run: /treasure")
 
 		await self.db.get_user(
 			interaction.user.id,
