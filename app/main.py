@@ -8,7 +8,6 @@ import logging
 from logger import setup_file_logger
 
 load_dotenv()
-
 # Each entry here is the module path to a cog file (relative to the app/ folder).
 # To add a new command:
 #   1. Create a new file in cogs/economy/ or cogs/games/ following the pattern (see rankings.py for a documented command)
