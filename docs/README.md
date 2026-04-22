@@ -15,6 +15,7 @@ A Discord bot with slash commands, minigames, and persistent coin balances store
 - `/rps` — play rock paper scissors to earn coins
 - `/joke` — get a random joke
 - `/cheat` — add coins to yourself (admin)
+- `/hangman` — play hangman game
 
 ## Tech Stack
 
