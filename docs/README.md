@@ -71,22 +71,29 @@ docker compose logs -f   # view logs while running in background
 
 ```
 app/
-├── main.py                  # entry point, loads all cogs
-├── db.py                    # all database logic
 ├── configs.py               # shared constants (rewards, emojis, API URLs)
+├── db.py                    # all database logic
+├── logger.py                # logging setup to log to file
+├── main.py                  # entry point, loads all cogs
 └── cogs/
-    ├── economy/             # commands pertaining to economy
+    ├───admin/               # commands related to admin
     │   ├── cheat.py
+    │   ├── downloadlogs.py
+    ├── economy/             # commands pertaining to economy
     │   ├── rankings.py      # /rankings  ← best file to read first
     │   └── stats.py
     └── games/               # commands pertaining to minigames
         ├── blackjack.py
-        ├── cards_hanlder.py # shared card deck logic for blackjack
+        ├── casino.py
         ├── coinflip.py
         ├── diceroll.py
+        ├── duel.py
+        ├── hangman.py
         ├── joke.py
-        ├── rps.py
-        └── trivia.py
+        ├── treasure.py
+        ├── trivia.py
+        ├── wheel.py
+        └── work.py
 ```
 
 ---
