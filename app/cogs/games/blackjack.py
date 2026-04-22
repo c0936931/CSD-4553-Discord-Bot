@@ -124,8 +124,6 @@ class BlackjackView(discord.ui.View):
 		if interaction.user != self.interaction.user:
 			return await interaction.response.send_message("This isn't your game!", ephemeral=True)
 
-		await interaction.response.defer()
-
 		# Deal a card to the player
 		self.player_cards, _ = await self.cog.hit(self.player_cards, self.shoe)
 
@@ -143,7 +141,6 @@ class BlackjackView(discord.ui.View):
 		if interaction.user != self.interaction.user:
 			return await interaction.response.send_message("This isn't your game!", ephemeral=True)
 
-		await interaction.response.defer()
 		self.stop()
 
 	async def on_timeout(self):
@@ -225,10 +222,11 @@ class Blackjack(commands.Cog):
 	@app_commands.describe(wager="Amount of coins to wager")
 	async def blackjack(self, interaction: discord.Interaction, wager: int) -> None:
 		# Main command
+		await interaction.response.defer(thinking=True)
 
 		# Anti-spam protection
 		if interaction.user.id in self.active_games:
-			return await interaction.response.send_message(
+			return await interaction.followup.send_message(
 				"You already have a blackjack game running. Finish it first.",
 				ephemeral=True
 			)
@@ -239,7 +237,7 @@ class Blackjack(commands.Cog):
 		# Validate wager
 		if wager <= 0:
 			self.active_games.pop(interaction.user.id, None)
-			return await interaction.response.send_message("Wager must be at least 1 coin", ephemeral=True)
+			return await interaction.followup.send_message("Wager must be at least 1 coin", ephemeral=True)
 
 		# Fetch user from database
 		user = await self.db.get_user(interaction.user.id, interaction.user.display_name)
@@ -247,11 +245,9 @@ class Blackjack(commands.Cog):
 		# Check balance
 		if user["balance"] < wager:
 			self.active_games.pop(interaction.user.id, None)
-			return await interaction.response.send_message(
+			return await interaction.followup.send_message(
 				f"Not enough coins, balance: {user['balance']:,}", ephemeral=True
 			)
-
-		await interaction.response.defer(thinking=True)
 
 		# Create shoe and hands
 		shoe = Shoe(DECKS)
