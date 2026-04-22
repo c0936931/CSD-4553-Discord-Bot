@@ -6,8 +6,9 @@ A Discord bot with slash commands, minigames, and persistent coin balances store
 
 ## Features
 #### Admin
-- `/cheat` — add coins to yourself (admin)
+- `/addcoins` — add coins to user
 - `/downloadlogs` — get current log file
+- `/removecoins` — remove coins from user
 
 #### Economy
 - `/rankings` — top 10 richest users
