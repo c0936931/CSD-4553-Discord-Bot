@@ -31,6 +31,8 @@ EXTENSIONS = [
 	"cogs.games.wheel",
 	"cogs.games.casino",
 	"cogs.games.duel",
+	"cogs.games.beastwar",
+	
 ]
 
 
