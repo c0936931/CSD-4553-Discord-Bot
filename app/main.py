@@ -84,6 +84,7 @@ def main():
 	async def on_ready():
 		await bot.tree.sync()
 		logging.info(f"Bot initialized as: {bot.user}")
+		logging.info("Loaded commands:", bot.tree.get_commands())
 
 	# setup_hook runs before the bot connects, so cogs are ready before on_ready fires
 	async def setup_hook():
