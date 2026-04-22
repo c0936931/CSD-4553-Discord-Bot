@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from db import Database
 import logging
 
-from logger import DiscordLogHandler
+from logger import setup_file_logger
 
 load_dotenv()
 
