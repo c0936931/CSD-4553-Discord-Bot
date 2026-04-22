@@ -10,7 +10,7 @@ class Stats(commands.Cog):
 		self.bot = bot
 		self.db = db
 
-	@app_commands.command(name="stats", description="Check your stats")
+	@app_commands.command(description="Check your stats")
 	async def stats(self, interaction: discord.Interaction) -> None:
 		await interaction.response.defer()
 
@@ -102,11 +102,11 @@ class Stats(commands.Cog):
 		embed.add_field(name="Casino W/L", value=casino_ratio, inline=True)
 
 		# PvP Duel
-		duel = user.get("duel", {})
-		duel_wins = duel.get("wins", 0)
-		duel_losses = duel.get("losses", 0)
-		duel_ratio = f"{duel_wins}/{duel_losses}" if (duel_wins + duel_losses) > 0 else "N/A"
-		embed.add_field(name="🏹 PvP Duel W/L", value=duel_ratio, inline=True)
+		# duel = user.get("duel", {})
+		# duel_wins = duel.get("wins", 0)
+		# duel_losses = duel.get("losses", 0)
+		# duel_ratio = f"{duel_wins}/{duel_losses}" if (duel_wins + duel_losses) > 0 else "N/A"
+		# embed.add_field(name="🏹 PvP Duel W/L", value=duel_ratio, inline=True)
 
 		await interaction.followup.send(embed=embed)
 
