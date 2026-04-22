@@ -18,7 +18,7 @@ EXTENSIONS = [
 	"cogs.economy.stats",
 	"cogs.economy.rankings",
 	"cogs.admin.cheat",
-	"cogs.admin.showlogs",
+	"cogs.admin.downloadlogs",
 	"cogs.games.coinflip",
 	"cogs.games.trivia",
 	"cogs.games.joke",
