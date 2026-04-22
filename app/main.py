@@ -24,6 +24,7 @@ EXTENSIONS = [
     "cogs.games.blackjack",
     "cogs.games.rps",
     "cogs.games.diceroll",
+    "cogs.games.hangman",
 ]
 
 
