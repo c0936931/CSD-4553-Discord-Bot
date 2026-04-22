@@ -5,18 +5,22 @@
 A Discord bot with slash commands, minigames, and persistent coin balances stored in MongoDB Atlas. Runs in Docker.
 
 ## Features
-
-- `/stats` — view your full stats (balance, games played, win/loss ratios)
-- `/rankings` — top 10 richest users
-- `/coinflip` — wager coins on a coin flip
-- `/trivia` — answer a trivia question to earn coins (reward scales with difficulty)
-- `/dice` — guess a dice roll (1-6) for a 5x payout
-- `/blackjack` — play a game of blackjack to earn coins
-- `/rps` — play rock paper scissors to earn coins
-- `/joke` — get a random joke
+#### Admin
 - `/cheat` — add coins to yourself (admin)
-- `/hangman` — play hangman game
 - `/downloadlogs` — get current log file
+
+#### Economy
+- `/rankings` — top 10 richest users
+- `/stats` — view your full stats (balance, games played, win/loss ratios)
+
+#### Games
+- `/blackjack` — play a game of blackjack to earn coins
+- `/coinflip` — wager coins on a coin flip
+- `/dice` — guess a dice roll (1-6) for a 5x payout
+- `/hangman` — play hangman game
+- `/joke` — get a random joke
+- `/rps` — play rock paper scissors to earn coins
+- `/trivia` — answer a trivia question to earn coins (reward scales with difficulty)
 
 ## Tech Stack
 
