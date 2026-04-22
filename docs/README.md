@@ -16,6 +16,7 @@ A Discord bot with slash commands, minigames, and persistent coin balances store
 - `/joke` — get a random joke
 - `/cheat` — add coins to yourself (admin)
 - `/hangman` — play hangman game
+- `/downloadlogs` — get current log file
 
 ## Tech Stack
 
