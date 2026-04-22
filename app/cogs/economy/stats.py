@@ -85,6 +85,20 @@ class Stats(commands.Cog):
         jokes_told = jokes.get("wins", 0)
         embed.add_field(name="Jokes Told", value=jokes_told, inline=True)
 
+         # Wheel
+        wheel = user.get("wheel", {})
+        wheel_wins = wheel.get("wins", 0)
+        wheel_losses = wheel.get("losses", 0)
+        wheel_ratio = f"{wheel_wins}/{wheel_losses}" if (wheel_wins + wheel_losses) > 0 else "N/A"
+        embed.add_field(name="Wheel W/L", value=wheel_ratio, inline=True)
+
+        # Casino
+        casino = user.get("casino", {})
+        casino_wins = casino.get("wins", 0)
+        casino_losses = casino.get("losses", 0)
+        casino_ratio = f"{casino_wins}/{casino_losses}" if (casino_wins + casino_losses) > 0 else "N/A"
+        embed.add_field(name="Casino W/L", value=casino_ratio, inline=True)
+
         await interaction.followup.send(embed=embed)
 
 
