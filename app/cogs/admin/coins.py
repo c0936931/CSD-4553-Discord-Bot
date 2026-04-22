@@ -53,7 +53,7 @@ class Coins(commands.Cog):
 
 		# Prevent negative balance
 		new_balance = max(0, db_user["balance"] - amount)
-		await self.db.set_balance(user.id, new_balance)
+		await self.db.update_balance(user.id, -amount)
 
 		embed = discord.Embed(
 			title="💸 Coins Removed",
