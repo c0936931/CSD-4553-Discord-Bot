@@ -6,40 +6,62 @@ from db import Database
 from configs import COIN_EMOJI
 import logging
 
-WORDS = ["python", "discord", "database", "programming", "hangman", "developer", "async", "function"]
+WORDS = [
+	"python",
+	"discord",
+	"database",
+	"programming",
+	"hangman",
+	"developer",
+	"async",
+	"function"
+]
 
 MAX_LIVES = 6
 REWARD = 50
 
 
 class HangmanView(discord.ui.View):
-	def __init__(self, cog, interaction, word, guessed, lives, msg):
+	def __init__(self, cog, interaction, word, msg):
 		super().__init__(timeout=60)
 
 		self.cog = cog
 		self.interaction = interaction
 		self.word = word
-		self.guessed = guessed
-		self.lives = lives
 		self.msg = msg
 
-		# Create letter buttons
-		for letter in "ABCDEFGHIJKLMNOPQRSTUVWXYZ":
-			self.add_item(HangmanButton(letter, self))
+		self.guessed = set()
+		self.used_letters = set()
+		self.lives = MAX_LIVES
+
+		# Discord allows max 25 components, so we use dropdowns instead of 26 buttons
+		self.add_item(HangmanSelect("A-I", "ABCDEFGHI"))
+		self.add_item(HangmanSelect("J-R", "JKLMNOPQR"))
+		self.add_item(HangmanSelect("S-Z", "STUVWXYZ"))
 
 	def get_display_word(self):
-		return " ".join([c if c in self.guessed else "_" for c in self.word])
+		return " ".join([letter if letter in self.guessed else "_" for letter in self.word])
+
+	def get_used_letters(self):
+		if not self.used_letters:
+			return "None"
+		return ", ".join(sorted(self.used_letters)).upper()
 
 	async def update_embed(self):
 		embed = discord.Embed(
 			title="🪓 Hangman",
-			description=f"Word: `{self.get_display_word()}`\n\nLives: ❤️ x{self.lives}",
+			description=(
+				f"Word: `{self.get_display_word()}`\n\n"
+				f"Lives: ❤️ x{self.lives}\n"
+				f"Used Letters: `{self.get_used_letters()}`"
+			),
 			color=discord.Color.blurple()
 		)
+
 		await self.msg.edit(embed=embed, view=self)
 
 	def check_win(self):
-		return all(c in self.guessed for c in self.word)
+		return all(letter in self.guessed for letter in self.word)
 
 	async def end_game(self, won: bool):
 		for child in self.children:
@@ -51,22 +73,27 @@ class HangmanView(discord.ui.View):
 			await self.cog.db.update_balance(user_id, REWARD)
 			await self.cog.db.record_game(user_id, "hangman", True)
 
-			title = f"🎉 You guessed the word: **{self.word}**!"
-			desc = f"You earned {REWARD} {COIN_EMOJI}"
-			color = discord.Color.green()
+			embed = discord.Embed(
+				title="🎉 You won!",
+				description=(
+					f"You guessed the word: **{self.word}**\n"
+					f"You earned **{REWARD} {COIN_EMOJI}**"
+				),
+				color=discord.Color.green()
+			)
 
 		else:
 			await self.cog.db.record_game(user_id, "hangman", False)
 
-			title = f"💀 You lost! The word was **{self.word}**"
-			desc = "Better luck next time!"
-			color = discord.Color.red()
-
-		embed = discord.Embed(title=title, description=desc, color=color)
+			embed = discord.Embed(
+				title="💀 You lost!",
+				description=f"The word was **{self.word}**\nBetter luck next time!",
+				color=discord.Color.red()
+			)
 
 		await self.msg.edit(embed=embed, view=self)
 
-		# Remove lock
+		# Remove active game lock
 		self.cog.active_games.pop(user_id, None)
 
 	async def on_timeout(self):
@@ -80,43 +107,66 @@ class HangmanView(discord.ui.View):
 		)
 
 		await self.msg.edit(embed=embed, view=self)
+
 		self.cog.active_games.pop(self.interaction.user.id, None)
 
 
-class HangmanButton(discord.ui.Button):
-	def __init__(self, letter, view):
-		super().__init__(label=letter, style=discord.ButtonStyle.secondary)
-		self.letter = letter.lower()
-		self.view_ref = view
+class HangmanSelect(discord.ui.Select):
+	def __init__(self, label, letters):
+		options = []
+
+		for letter in letters:
+			options.append(
+				discord.SelectOption(
+					label=letter,
+					value=letter.lower()
+				)
+			)
+
+		super().__init__(
+			placeholder=f"Choose a letter: {label}",
+			min_values=1,
+			max_values=1,
+			options=options
+		)
 
 	async def callback(self, interaction: discord.Interaction):
-		view = self.view_ref
+		view: HangmanView = self.view
 
-		# Only allow original user
+		# Only the person who started the game can play
 		if interaction.user != view.interaction.user:
-			return await interaction.response.send_message("This isn't your game!", ephemeral=True)
+			return await interaction.response.send_message(
+				"This isn't your game!",
+				ephemeral=True
+			)
+
+		letter = self.values[0]
+
+		# Prevent same letter from being used again
+		if letter in view.used_letters:
+			return await interaction.response.send_message(
+				f"You already guessed `{letter.upper()}`.",
+				ephemeral=True
+			)
 
 		await interaction.response.defer()
 
-		self.disabled = True
+		view.used_letters.add(letter)
 
-		# Guess logic
-		if self.letter in view.word:
-			view.guessed.add(self.letter)
+		if letter in view.word:
+			view.guessed.add(letter)
 		else:
 			view.lives -= 1
 
-		await view.update_embed()
-
-		# Check win
 		if view.check_win():
 			view.stop()
 			return await view.end_game(True)
 
-		# Check lose
 		if view.lives <= 0:
 			view.stop()
 			return await view.end_game(False)
+
+		await view.update_embed()
 
 
 class Hangman(commands.Cog):
@@ -130,33 +180,36 @@ class Hangman(commands.Cog):
 
 		logging.info("Command Run: /hangman")
 
-		# Anti-spam
-		if interaction.user.id in self.active_games:
+		user_id = interaction.user.id
+
+		# Anti-spam system
+		if user_id in self.active_games:
 			return await interaction.response.send_message(
 				"You already have a game running.",
 				ephemeral=True
 			)
 
-		self.active_games[interaction.user.id] = True
+		self.active_games[user_id] = True
 
 		await interaction.response.defer(thinking=True)
 
 		word = random.choice(WORDS)
-		guessed = set()
-		lives = MAX_LIVES
 
 		embed = discord.Embed(
 			title="🪓 Hangman",
-			description=f"Word: `{' '.join('_' for _ in word)}`\n\nLives: ❤️ x{lives}",
+			description=(
+				f"Word: `{' '.join('_' for _ in word)}`\n\n"
+				f"Lives: ❤️ x{MAX_LIVES}\n"
+				f"Used Letters: `None`"
+			),
 			color=discord.Color.blurple()
 		)
 
 		msg = await interaction.followup.send(embed=embed)
 
-		view = HangmanView(self, interaction, word, guessed, lives, msg)
-		await msg.edit(view=view)
+		view = HangmanView(self, interaction, word, msg)
 
-		await view.wait()
+		await msg.edit(view=view)
 
 
 async def setup(bot: commands.Bot):
