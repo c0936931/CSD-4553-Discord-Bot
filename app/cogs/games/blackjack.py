@@ -27,7 +27,7 @@ def get_card(card):
 		return ""
 	else:
 		try:
-			return small[card]
+			return cards[card]
 		except KeyError:
 			print("Error: card not supported")
 			raise
