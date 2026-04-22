@@ -101,6 +101,13 @@ class Stats(commands.Cog):
 		casino_ratio = f"{casino_wins}/{casino_losses}" if (casino_wins + casino_losses) > 0 else "N/A"
 		embed.add_field(name="Casino W/L", value=casino_ratio, inline=True)
 
+		 # PvP Duel
+        duel = user.get("duel", {})
+        duel_wins = duel.get("wins", 0)
+        duel_losses = duel.get("losses", 0)
+        duel_ratio = f"{duel_wins}/{duel_losses}" if (duel_wins + duel_losses) > 0 else "N/A"
+        embed.add_field(name="🏹 PvP Duel W/L", value=duel_ratio, inline=True)
+
 		await interaction.followup.send(embed=embed)
 
 
