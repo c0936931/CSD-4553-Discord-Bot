@@ -30,8 +30,7 @@ EXTENSIONS = [
 	"cogs.games.treasure",
 	"cogs.games.wheel",
 	"cogs.games.casino",
-	
-	]
+]
 
 
 # Validate required env

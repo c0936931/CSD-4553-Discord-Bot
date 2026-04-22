@@ -21,6 +21,7 @@ cards = {
 values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "0", "J", "Q", "K"]
 suits = ["H", "D", "S", "C"]
 
+
 # Get card emoji
 def get_card(card):
 	if len(card) == 0:
@@ -59,7 +60,7 @@ class Deck():
 		card = self.cards.pop()
 		self.delt.append(card)
 		return card
-		
+
 
 # Card Shoe Holder
 class Shoe():
@@ -118,7 +119,7 @@ class BlackjackView(discord.ui.View):
 	@discord.ui.button(label="Hit", style=discord.ButtonStyle.green)
 	async def hit_button(self, interaction: discord.Interaction, button: discord.ui.Button):
 		# Hit button
-		
+
 		# Prevent other users from clicking
 		if interaction.user != self.interaction.user:
 			return await interaction.response.send_message("This isn't your game!", ephemeral=True)
@@ -136,7 +137,7 @@ class BlackjackView(discord.ui.View):
 	@discord.ui.button(label="Stand", style=discord.ButtonStyle.red)
 	async def stand_button(self, interaction: discord.Interaction, button: discord.ui.Button):
 		# Stand button
-		
+
 		if interaction.user != self.interaction.user:
 			return await interaction.response.send_message("This isn't your game!", ephemeral=True)
 
@@ -144,7 +145,7 @@ class BlackjackView(discord.ui.View):
 
 	async def on_timeout(self):
 		# Timeout so games don't keep waiting
-		
+
 		for child in self.children:
 			child.disabled = True
 

@@ -126,7 +126,7 @@ class Hangman(commands.Cog):
 
 	@app_commands.command(description="Play Hangman and guess the word", name="hangman")
 	async def hangman(self, interaction: discord.Interaction):
-		
+
 		# Anti-spam
 		if interaction.user.id in self.active_games:
 			return await interaction.response.send_message(
@@ -144,7 +144,7 @@ class Hangman(commands.Cog):
 
 		embed = discord.Embed(
 			title="🪓 Hangman",
-			description=f"Word: `{ ' '.join('_' for _ in word) }`\n\nLives: ❤️ x{lives}",
+			description=f"Word: `{' '.join('_' for _ in word)}`\n\nLives: ❤️ x{lives}",
 			color=discord.Color.blurple()
 		)
 

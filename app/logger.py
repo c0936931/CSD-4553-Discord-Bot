@@ -4,6 +4,7 @@ from logging.handlers import RotatingFileHandler
 
 LOG_FILE = "bot.log"
 
+
 def setup_file_logger(level=logging.INFO):
 	log_dir = os.path.dirname(LOG_FILE)
 	if log_dir and not os.path.exists(log_dir):

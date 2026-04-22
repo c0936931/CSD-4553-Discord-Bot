@@ -3,6 +3,7 @@ from discord import app_commands
 from discord.ext import commands
 import os
 
+
 class Logs(commands.Cog):
 	def __init__(self, bot: commands.Bot):
 		self.bot = bot
@@ -30,6 +31,7 @@ class Logs(commands.Cog):
 				f"Failed to send log file: `{e}`",
 				ephemeral=True
 			)
+
 
 async def setup(bot):
 	await bot.add_cog(Logs(bot))
