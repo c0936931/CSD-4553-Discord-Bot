@@ -15,8 +15,8 @@ load_dotenv()
 #   2. Add its path to this list (e.g. "cogs.economy.mycommand")
 #   3. Restart the bot, it will load automatically
 EXTENSIONS = [
-	"cogs.economy.stats",
 	"cogs.economy.rankings",
+	"cogs.economy.stats",
 	"cogs.admin.coins",
 	"cogs.admin.downloadlogs",
 	"cogs.games.coinflip",
