@@ -1,13 +1,90 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
-from cards_handler import get_card, Shoe
 import asyncio
 from db import Database
 from configs import COIN_EMOJI
+import random									# Used for shuffle
 
 DECKS = 6            # Number of decks in the shoe
 DEAL_SPEED = 0.5     # Delay between card deals for animation
+
+# Unicode based cards
+cards = {
+	"AS": "🂡", "2S": "🂢", "3S": "🂣", "4S": "🂤", "5S": "🂥", "6S": "🂦", "7S": "🂧", "8S": "🂨", "9S": "🂩", "0S": "🂪", "JS": "🂫", "QS": "🂭", "KS": "🂮",
+	"AH": "🂱", "2H": "🂲", "3H": "🂳", "4H": "🂴", "5H": "🂵", "6H": "🂶", "7H": "🂷", "8H": "🂸", "9H": "🂹", "0H": "🂺", "JH": "🂻", "QH": "🂽", "KH": "🂾",
+	"AC": "🃑", "2C": "🃒", "3C": "🃓", "4C": "🃔", "5C": "🃕", "6C": "🃖", "7C": "🃗", "8C": "🃘", "9C": "🃙", "0C": "🃚", "JC": "🃛", "QC": "🃝", "KC": "🃞",
+	"AD": "🃁", "2D": "🃂", "3D": "🃃", "4D": "🃄", "5D": "🃅", "6D": "🃆", "7D": "🃇", "8D": "🃈", "9D": "🃉", "0D": "🃊", "JD": "🃋", "QD": "🃍", "KD": "🃎",
+	"J": "🃏", "--": "🂠"}
+
+# Values and suits (0 is 10)
+values = ["A", "2", "3", "4", "5", "6", "7", "8", "9", "0", "J", "Q", "K"]
+suits = ["H", "D", "S", "C"]
+
+# Get card emoji
+def get_card(card):
+	if len(card) == 0:
+		return ""
+	else:
+		try:
+			return small[card]
+		except KeyError:
+			print("Error: card not supported")
+			raise
+		else:
+			pass
+
+
+# Card Deck Holder
+class Deck():
+	def __init__(self):
+		self.cards = []
+		self.delt = []
+		for suit in suits:
+			for value in values:
+				self.cards.append(f"{value}{suit}")
+		self.shuffle()
+
+	def shuffle(self):
+		self.cards.extend(self.delt)
+		self.delt = []
+		random.shuffle(self.cards)
+
+	def print(self):
+		for self.card in self.cards:
+			print(get_card(self.card), end="")
+		print()
+
+	def draw(self):
+		card = self.cards.pop()
+		self.delt.append(card)
+		return card
+		
+
+# Card Shoe Holder
+class Shoe():
+	def __init__(self, count):
+		self.cards = []
+		self.delt = []
+		for self.i in range(count):
+			deck = Deck()
+			self.cards.extend(deck.cards)
+		self.shuffle()
+
+	def shuffle(self):
+		self.cards.extend(self.delt)
+		self.delt = []
+		random.shuffle(self.cards)
+
+	def print(self):
+		for self.card in self.cards:
+			print(get_card(self.card), end="")
+		print()
+
+	def draw(self):
+		card = self.cards.pop()
+		self.delt.append(card)
+		return card
 
 
 class BlackjackView(discord.ui.View):
