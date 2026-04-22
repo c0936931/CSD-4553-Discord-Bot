@@ -7,7 +7,7 @@ class Logs(commands.Cog):
 	def __init__(self, bot: commands.Bot):
 		self.bot = bot
 
-	@app_commands.command(name="showlogs", description="Send the bot log file.")
+	@app_commands.command(name="downloadlogs", description="Send the bot log file.")
 	async def showlogs(self, interaction: discord.Interaction):
 		await interaction.response.defer(thinking=True, ephemeral=True)
 
