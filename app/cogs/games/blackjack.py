@@ -93,7 +93,6 @@ class BlackjackView(discord.ui.View):
 		super().__init__(timeout=30)
 
 		# Store references needed
-		self.cog = cog
 		self.interaction = interaction
 		self.shoe = shoe
 		self.dealer_cards = dealer_cards
@@ -103,10 +102,10 @@ class BlackjackView(discord.ui.View):
 
 	async def update_embed(self, hide_dealer=True):
 		# Update embed including values
-		dealer_value = self.cog.cards_value(self.dealer_cards)
-		player_value = self.cog.cards_value(self.player_cards)
+		dealer_value = self.cards_value(self.dealer_cards)
+		player_value = self.cards_value(self.player_cards)
 
-		embed = self.cog.build_embed(
+		embed = self.build_embed(
 			self.dealer_cards,
 			dealer_value,
 			self.player_cards,
@@ -125,13 +124,13 @@ class BlackjackView(discord.ui.View):
 			return await interaction.response.send_message("This isn't your game!", ephemeral=True)
 
 		# Deal a card to the player
-		self.player_cards, _ = await self.cog.hit(self.player_cards, self.shoe)
+		self.player_cards = await self.hit(self.player_cards, self.shoe)
 
 		# Update embed with hidden dealer card
 		await self.update_embed(hide_dealer=True)
 
 		# If player hits 21 or busts stop the view
-		if self.cog.cards_value(self.player_cards) >= 21:
+		if self.cards_value(self.player_cards) >= 21:
 			self.stop()
 
 	@discord.ui.button(label="Stand", style=discord.ButtonStyle.red)
