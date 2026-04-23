@@ -3,24 +3,10 @@ from discord import app_commands
 from discord.ext import commands
 
 
-class Streak(commands.Cog):
+class Inventory(commands.Cog):
 	def __init__(self, bot):
 		self.bot = bot
 		self.db = bot.db
-
-	# 🔥 STREAK COMMAND
-	@app_commands.command(name="streaks", description="Check your streak")
-	async def streaks(self, interaction: discord.Interaction):
-		user = await self.db.get_user(
-			interaction.user.id,
-			interaction.user.display_name
-		)
-
-		streak = user.get("streak", 0)
-
-		await interaction.response.send_message(
-			f"🔥 Your current streak is: {streak}"
-		)
 
 	# 🎒 INVENTORY COMMAND
 	@app_commands.command(name="inventory", description="Check your inventory")
@@ -42,4 +28,4 @@ class Streak(commands.Cog):
 
 # 🔧 REQUIRED TO LOAD COG
 async def setup(bot):
-	await bot.add_cog(Streak(bot))
+	await bot.add_cog(Inventory(bot))
