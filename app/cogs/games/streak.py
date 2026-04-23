@@ -14,3 +14,8 @@ async def streaks(self, interaction: discord.Interaction):
 	await interaction.response.send_message(
 		f"🔥 Your current streak is: **{streak} days**"
 	)
+
+
+# 🔧 REQUIRED TO LOAD COG
+async def setup(bot):
+	await bot.add_cog(streaks(bot))
