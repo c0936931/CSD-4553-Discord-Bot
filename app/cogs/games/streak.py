@@ -19,7 +19,7 @@ class Streaks(commands.Cog):
 
 		streak = user.get("streak", 0)
 
-		await interaction.response.send_message(
+		await interaction.followup.send(
 			f"🔥 Your current streak is: **{streak} days**"
 		)
 
