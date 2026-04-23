@@ -23,6 +23,7 @@ class Streaks(commands.Cog):
 			f"🔥 Your current streak is: **{streak} days**"
 		)
 
-	# 🔧 REQUIRED TO LOAD COG
-	async def setup(bot):
-		await bot.add_cog(Streaks(bot))
+
+# 🔧 REQUIRED TO LOAD COG
+async def setup(bot):
+	await bot.add_cog(Streaks(bot))
