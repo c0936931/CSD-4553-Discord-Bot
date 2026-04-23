@@ -1,6 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+import logging
 
 
 class Streaks(commands.Cog):
@@ -11,6 +12,9 @@ class Streaks(commands.Cog):
 	@app_commands.command(name="streaks", description="Check your streak")
 	async def streaks(self, interaction: discord.Interaction):
 		await interaction.response.defer()
+
+		# Log command run
+		logging.info("Command Run: /streaks")
 
 		user = await self.db.get_user(
 			interaction.user.id,

@@ -1,6 +1,7 @@
 import discord
 from discord import app_commands
 from discord.ext import commands
+import logging
 
 
 class Inventory(commands.Cog):
@@ -12,6 +13,9 @@ class Inventory(commands.Cog):
 	@app_commands.command(name="inventory", description="Check your inventory")
 	async def inventory(self, interaction: discord.Interaction):
 		await interaction.response.defer()
+
+		# Log command run
+		logging.info("Command Run: /inventory")
 
 		user = await self.db.get_user(
 			interaction.user.id,

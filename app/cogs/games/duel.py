@@ -3,6 +3,7 @@ import discord
 from discord import app_commands
 from discord.ext import commands
 from db import Database
+import logging
 
 
 class Duel(commands.Cog):
@@ -30,6 +31,9 @@ class Duel(commands.Cog):
 		bet: int
 	):
 		await interaction.response.defer()
+
+		# Log command run
+		logging.info("Command Run: /duel")
 
 		challenger_id = interaction.user.id
 		challenger_name = interaction.user.display_name
