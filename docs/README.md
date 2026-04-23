@@ -25,8 +25,10 @@ A Discord bot with slash commands, minigames, and persistent coin balances store
 - `/wheel` — spin a prize wheel and win or lose coins
 - `/work` — work a random job and earn coins
 - `/treasure` — open a treasure chest and find coins, traps, or rare rewards
--  `/casino` — place a bet and try your luck with slot-machine style rewards
+- `/casino` — place a bet and try your luck with slot-machine style rewards
 - `/duel` — challenge another player to a duel and fight for coins
+- `/inventory` — command to view inventory
+- `/streaks` — command to view current streak
 
 ## Tech Stack
 
